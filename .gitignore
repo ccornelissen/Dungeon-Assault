@@ -1,0 +1,17 @@
+Binaries
+DerivedDataCache
+Intermediate
+Saved
+*.VC.db
+*.opensdf
+*.opendb
+*.sdf
+*.sln
+*.suo
+*.xcodeproj
+*.xcworkspace
+UE4_Project/Content/StarterContent/
+UE4_Project/Content/Levels/Bedroom_BuiltData.uasset
+*.db-shm
+*.db-wal
+*.ipch
