@@ -1,8 +1,6 @@
 // Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 
 #include "Dungeon_Assault_UE4GameMode.h"
-#include "Dungeon_Assault_UE4PlayerController.h"
-#include "Dungeon_Assault_UE4Character.h"
 #include "UObject/ConstructorHelpers.h"
 
 ADungeon_Assault_UE4GameMode::ADungeon_Assault_UE4GameMode()

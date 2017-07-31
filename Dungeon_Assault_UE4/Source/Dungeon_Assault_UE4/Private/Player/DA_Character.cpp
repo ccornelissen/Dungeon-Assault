@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "WeaponEquipComponent.h"
 
 // Sets default values
 ADA_Character::ADA_Character()
@@ -39,6 +40,10 @@ ADA_Character::ADA_Character()
 	TopDownCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	TopDownCamera->SetupAttachment(CameraArm, USpringArmComponent::SocketName);
 	TopDownCamera->bUsePawnControlRotation = false;
+
+	//Adding weapon component
+	WeaponComp = CreateDefaultSubobject<UWeaponEquipComponent>(TEXT("Weapon"));
+	WeaponComp->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -61,6 +66,8 @@ void ADA_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAction("WeaponAttack", IE_Pressed, this, &ADA_Character::UseWeapon);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &ADA_Character::MoveVertical);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ADA_Character::MoveHorizontal);
 }
@@ -68,6 +75,11 @@ void ADA_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void ADA_Character::MoveVertical(float Value)
 {
 	AddMovementInput(GetActorForwardVector(), Value);
+}
+
+void ADA_Character::UseWeapon()
+{
+	WeaponComp->Attack();
 }
 
 void ADA_Character::MoveHorizontal(float Value)
