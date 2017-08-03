@@ -5,49 +5,68 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "EngineUtils.h"
+#include "PaperFlipbookComponent.h"
 
 ABossProjectile::ABossProjectile()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	BookComponent = FindComponentByClass<UPaperFlipbookComponent>();
 
-	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(FName("Projectile Movement Component"));
-	ProjectileMovement->bAutoActivate = false;
-
-	SphereCollision = CreateDefaultSubobject<USphereComponent>(FName("Projectile Collision"));
-	SphereCollision->bGenerateOverlapEvents = true;
+	BookComponent->OnComponentBeginOverlap.AddDynamic(this, &ABossProjectile::OnOverlapBegin);
+	BookComponent->SetNotifyRigidBodyCollision(true);
+	BookComponent->SetSimulatePhysics(true);
+	BookComponent->SetMassOverrideInKg(NAME_None, 3.0f, true);
+	BookComponent->SetEnableGravity(false);
+	
 }
 
 void ABossProjectile::BeginPlay()
 {
 	GetWorld()->GetTimerManager().SetTimer(LifeTimerHandle, this, &ABossProjectile::Explode, fLifeSpan, false);
 
+	//SphereCollision->SetWorldLocation(GetActorLocation());
+
 	for (TActorIterator<ADA_Character> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		Player = *ActorItr;
 	}
 
-	
-
 	MoveProjectile();
 	
-}
-
-// Called every frame
-void ABossProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	MoveProjectile();
 }
 
 void ABossProjectile::MoveProjectile()
 {
-	ProjectileMovement->Activate(true);
-
 	if (Player)
 	{
-		ProjectileMovement->SetVelocityInLocalSpace(GetActorForwardVector() * fMovementSpeed);
+		BookComponent->SetSimulatePhysics(true);
+
+		float x = (Player->GetActorLocation().X - GetActorLocation().X) * fMovementForce;
+
+		float y = (Player->GetActorLocation().Y - GetActorLocation().Y) * fMovementForce;
+
+		if (x < 0)
+		{
+			x = FMath::Clamp(x, -fMaxSpeed, 0.0f);
+		}
+		else if (x > 0)
+		{
+			x = FMath::Clamp(x, 0.0f, fMaxSpeed);
+		}
+
+
+		if (y < 0)
+		{
+			y = FMath::Clamp(y, -fMaxSpeed, 0.0f);
+		}
+		else if (x > 0)
+		{
+			y = FMath::Clamp(y, 0.0f, fMaxSpeed);
+		}
+
+
+		FVector FireLoc = FVector(x , y, 1.0f);
+
+		BookComponent->AddImpulse(FireLoc);
 	}
 	else
 	{
@@ -57,7 +76,9 @@ void ABossProjectile::MoveProjectile()
 
 void ABossProjectile::Explode()
 {
-	SphereCollision->SetSphereRadius(SphereCollision->GetScaledSphereRadius() * fExplositionScale, true);
+	UE_LOG(LogTemp, Warning, TEXT("Exploding"));
+
+	//SphereCollision->SetSphereRadius(SphereCollision->GetScaledSphereRadius() * fExplositionScale, true);
 
 	GetWorld()->GetTimerManager().SetTimer(AnimTimerHandle, this, &ABossProjectile::DestroyProjectile, fExplosionAnimationLength, false);
 }
@@ -79,6 +100,6 @@ void ABossProjectile::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActo
 
 	if (HitCharacter)
 	{
-		//Apply damage
+		//TODO: Deal Damage
 	}
 }

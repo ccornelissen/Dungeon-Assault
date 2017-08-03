@@ -31,10 +31,10 @@ protected:
 
 	//Map Gen Variables
 	UPROPERTY(EditDefaultsOnly, Category = "Map Generation")
-	int32 iMaxMapSize = 15;
+	int32 iMaxMapSize = 25;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Map Generation")
-	int32 iMinMapSize = 5;
+	int32 iMinMapSize = 15;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Map Generation")
 	int32 iMapSquareSize = 128;

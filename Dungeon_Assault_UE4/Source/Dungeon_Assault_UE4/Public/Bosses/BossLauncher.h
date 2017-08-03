@@ -28,6 +28,9 @@ protected:
 	TSubclassOf<ABossProjectile> Projectile;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	float fSpawnDistance = 300.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	float fReloadTime = 5.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")

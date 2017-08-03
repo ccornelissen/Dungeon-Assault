@@ -12,6 +12,7 @@
 class UProjectileMovementComponent;
 class ADA_Character;
 class USphereComponent;
+class UPaperFlipbookComponent;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API ABossProjectile : public APaperFlipbookActor
@@ -26,9 +27,6 @@ class DUNGEON_ASSAULT_UE4_API ABossProjectile : public APaperFlipbookActor
 
 	void DestroyProjectile();
 
-	UPROPERTY(EditDefaultsOnly)
-	USphereComponent* SphereCollision = nullptr;
-
 	UFUNCTION()
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -38,15 +36,9 @@ public:
 
 	
 protected:
-	
-	UPROPERTY(EditDefaultsOnly)
-	UProjectileMovementComponent* ProjectileMovement = nullptr;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	float fExplositionScale = 2.0f;
@@ -55,16 +47,21 @@ protected:
 	float fDamage = 10.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	float fMovementSpeed = 5.0f;
+	float fMovementForce = 25.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	float fLifeSpan = 2.0f;
+	float fMaxSpeed = 7500.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	float fLifeSpan = 15.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	float fExplosionAnimationLength = 0.5f;
 
 private:
 	ADA_Character* Player;
+
+	UPaperFlipbookComponent* BookComponent;
 	
 	FTimerHandle LifeTimerHandle;
 

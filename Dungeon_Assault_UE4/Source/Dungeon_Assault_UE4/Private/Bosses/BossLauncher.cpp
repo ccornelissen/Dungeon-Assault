@@ -17,7 +17,7 @@ void ABossLauncher::BeginPlay()
 
 void ABossLauncher::FireProjectile()
 {
-	FVector SpawnLoc = FVector(GetActorLocation().X - 200.0f, GetActorLocation().Y, GetActorLocation().Z);
+	FVector SpawnLoc = FVector(GetActorLocation().X - fSpawnDistance, GetActorLocation().Y, GetActorLocation().Z);
 
 	ABossProjectile* CurProjectile = GetWorld()->SpawnActor<ABossProjectile>(Projectile, SpawnLoc, GetActorRotation());
 
