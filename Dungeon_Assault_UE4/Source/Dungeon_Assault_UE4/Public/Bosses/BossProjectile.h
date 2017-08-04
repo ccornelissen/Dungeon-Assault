@@ -20,8 +20,6 @@ class DUNGEON_ASSAULT_UE4_API ABossProjectile : public APaperFlipbookActor
 	GENERATED_BODY()
 
 	ABossProjectile();
-
-	void MoveProjectile();
 	
 	void Explode();
 
@@ -30,11 +28,13 @@ class DUNGEON_ASSAULT_UE4_API ABossProjectile : public APaperFlipbookActor
 	UFUNCTION()
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-
 public:
 	void SetPlayer(ADA_Character& PlayerToSet);
 
+	void SetFireVector(FVector VectorToSet);
 	
+	void MoveProjectile();
+
 protected:
 
 	// Called when the game starts or when spawned
@@ -47,10 +47,7 @@ protected:
 	float fDamage = 10.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	float fMovementForce = 25.0f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	float fMaxSpeed = 7500.0f;
+	float fMovementForce = 10000.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	float fLifeSpan = 15.0f;
@@ -60,6 +57,8 @@ protected:
 
 private:
 	ADA_Character* Player;
+
+	FVector FireVector;
 
 	UPaperFlipbookComponent* BookComponent;
 	

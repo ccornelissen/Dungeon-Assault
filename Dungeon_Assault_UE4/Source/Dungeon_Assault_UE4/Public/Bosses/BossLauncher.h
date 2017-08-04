@@ -16,6 +16,7 @@ UCLASS()
 class DUNGEON_ASSAULT_UE4_API ABossLauncher : public APaperFlipbookActor
 {
 	GENERATED_BODY()
+	ABossLauncher();
 	
 public:
 	void FireProjectile();
@@ -25,7 +26,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	TSubclassOf<ABossProjectile> Projectile;
+	TSubclassOf<ABossProjectile> Projectile = nullptr;;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	float fSpawnDistance = 300.0f;
@@ -35,6 +36,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	float fHealth = 45.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	USceneComponent* FireFromComponent = nullptr;
 
 	FTimerHandle ReloadTimerHandle;
 

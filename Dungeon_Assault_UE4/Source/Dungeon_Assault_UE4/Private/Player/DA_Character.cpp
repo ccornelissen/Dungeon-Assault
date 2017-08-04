@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "WeaponEquipComponent.h"
+#include "DAPlayerUI.h"
 
 // Sets default values
 ADA_Character::ADA_Character()
@@ -50,6 +51,11 @@ ADA_Character::ADA_Character()
 void ADA_Character::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (PlayerUI)
+	{
+		PlayerUI->fPlayerMaxHealth = fPlayerHealth;
+	}
 	
 }
 
@@ -59,6 +65,31 @@ void ADA_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ADA_Character::DATakeDamage(float DamageToTake)
+{
+	fPlayerHealth -= DamageToTake;
+
+	if (PlayerUI)
+	{
+		PlayerUI->UpdateHealthBar(fPlayerHealth);
+	}
+
+	CheckIfDead();
+}
+
+void ADA_Character::CheckIfDead()
+{
+	if (fPlayerHealth <= 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player is dead now!"));
+	}
+}
+
+void ADA_Character::SetPlayerUI(UDAPlayerUI & UIToSet)
+{
+	PlayerUI = &UIToSet;
 }
 
 // Called to bind functionality to input

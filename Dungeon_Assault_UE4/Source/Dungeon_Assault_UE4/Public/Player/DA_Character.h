@@ -9,11 +9,15 @@
 class UCameraComponent;
 class USpringArmComponent;
 class UWeaponEquipComponent;
+class UDAPlayerUI;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API ADA_Character : public ACharacter
 {
 	GENERATED_BODY()
+
+	
+
 public:
 	// Sets default values for this character's properties
 	ADA_Character();
@@ -23,6 +27,12 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void DATakeDamage(float DamageToTake);
+
+	void CheckIfDead();
+
+	void SetPlayerUI(UDAPlayerUI& UIToSet);
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -36,6 +46,9 @@ protected:
 
 	void UseWeapon();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float fPlayerHealth = 100.0f;
+
 private:
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
@@ -47,4 +60,6 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Equipment", meta = (AllowPrivateAccess = "true"))
 	UWeaponEquipComponent* WeaponComp;
+
+	UDAPlayerUI* PlayerUI = nullptr;
 };
