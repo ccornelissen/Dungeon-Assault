@@ -2,6 +2,7 @@
 
 #include "WeaponEquipComponent.h"
 #include "BossBase.h"
+#include "BossLauncher.h"
 
 UWeaponEquipComponent::UWeaponEquipComponent()
 {
@@ -10,57 +11,69 @@ UWeaponEquipComponent::UWeaponEquipComponent()
 
 void UWeaponEquipComponent::Attack()
 {
-	bGenerateOverlapEvents = true;
+	if (bCanSwing)
+	{
+		bCanSwing = false;
+		bGenerateOverlapEvents = true;
 
-	AnimSwitch(EAnimState::AS_Swing);
+		AnimSwitch(EWeaponAnimState::AS_Swing);
 
-	StartLoc = GetComponentLocation();
+		StartLoc = GetComponentLocation();
 
-	FVector NewLoc = FVector(StartLoc.X + 40.0f, StartLoc.Y, StartLoc.Z);
+		FVector NewLoc = FVector(StartLoc.X + 40.0f, StartLoc.Y, StartLoc.Z);
 
-	SetWorldLocation(NewLoc);
+		SetWorldLocation(NewLoc);
 
-	SetWorldLocation(StartLoc);
-
-	bGenerateOverlapEvents = false;
+		SetWorldLocation(StartLoc);
+	}
 }
 
 void UWeaponEquipComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ABossBase* HitBoss = nullptr;
-
 	if (OtherActor != nullptr)
 	{
-		HitBoss = Cast<ABossBase>(OtherActor);
-	}
+		ABossBase* HitBoss = Cast<ABossBase>(OtherActor);
 
-	if (HitBoss != nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Hit"));
-		HitBoss->ApplyDamage(fWeaponDamage);
+		if (HitBoss != nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Hit Boss"));
+			HitBoss->ApplyDamage(fWeaponDamage);
+		}
+
+		ABossLauncher* HitLauncher = Cast<ABossLauncher>(OtherActor);
+
+		if (HitLauncher != nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Hit Launcher"));
+			HitLauncher->ApplyDamage(fWeaponDamage);
+		}
 	}
 }
 
-void UWeaponEquipComponent::AnimSwitch(EAnimState SwitchState)
+void UWeaponEquipComponent::AnimSwitch(EWeaponAnimState SwitchState)
 {
 	CurrentAnimState = SwitchState;
 
 	switch (CurrentAnimState)
 	{
-	case EAnimState::AS_Idle:
+	case EWeaponAnimState::AS_Idle:
+
+		bGenerateOverlapEvents = false;
 
 		if (IdleBook != nullptr)
 		{
-			SourceFlipbook = IdleBook;
+			SetFlipbook(IdleBook);
 		}
+
+		bCanSwing = true;
 
 		return;
 
-	case EAnimState::AS_Swing:
+	case EWeaponAnimState::AS_Swing:
 
 		if (SwingBook != nullptr)
 		{
-			SourceFlipbook = SwingBook;
+			SetFlipbook(SwingBook);
 		}
 
 		GetWorld()->GetTimerManager().SetTimer(AnimTimerHandle, this, &UWeaponEquipComponent::SwitchToIdle, fSwingTimer, false);
@@ -71,7 +84,7 @@ void UWeaponEquipComponent::AnimSwitch(EAnimState SwitchState)
 
 void UWeaponEquipComponent::SwitchToIdle()
 {
-	AnimSwitch(EAnimState::AS_Idle);
+	AnimSwitch(EWeaponAnimState::AS_Idle);
 }
 
 

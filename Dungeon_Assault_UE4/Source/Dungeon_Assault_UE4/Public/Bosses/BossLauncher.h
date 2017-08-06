@@ -8,6 +8,8 @@
 
 class ABossProjectile;
 class ADA_Character;
+class UEnemyHealthBar;
+class UUserWidget;
 
 /**
  * 
@@ -21,9 +23,19 @@ class DUNGEON_ASSAULT_UE4_API ABossLauncher : public APaperFlipbookActor
 public:
 	void FireProjectile();
 
+	void ApplyDamage(float fDamage);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Health")
+	TSubclassOf<UUserWidget> HealthWidget = nullptr;
+
+	UEnemyHealthBar* LauncherHealthBar = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Launcher")
+	float fLauncherHealth = 50.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	TSubclassOf<ABossProjectile> Projectile = nullptr;;
@@ -43,5 +55,7 @@ protected:
 	FTimerHandle ReloadTimerHandle;
 
 private:
+	void DestroyLauncher();
+
 	ADA_Character* Player;
 };

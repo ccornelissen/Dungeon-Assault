@@ -10,7 +10,7 @@
  * 
  */
 UENUM()
-enum class EAnimState : uint8
+enum class EWeaponAnimState : uint8
 {
 	AS_Idle,
 	AS_Swing,
@@ -48,9 +48,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UPaperFlipbook* SwingBook;
 
-	EAnimState CurrentAnimState = EAnimState::AS_Idle;
+	EWeaponAnimState CurrentAnimState = EWeaponAnimState::AS_Idle;
 
-	void AnimSwitch(EAnimState SwitchState);
+	void AnimSwitch(EWeaponAnimState SwitchState);
+
+	bool bCanSwing = true;
 
 	void SwitchToIdle();
 };

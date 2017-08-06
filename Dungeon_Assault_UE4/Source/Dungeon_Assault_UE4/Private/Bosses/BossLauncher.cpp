@@ -4,7 +4,8 @@
 #include "BossProjectile.h"
 #include "DA_Character.h"
 #include "EngineUtils.h"
-
+#include "EnemyHealthBar.h"
+#include "UserWidget.h"
 
 ABossLauncher::ABossLauncher()
 {
@@ -23,6 +24,15 @@ void ABossLauncher::BeginPlay()
 	{
 		Player = *ActorItr;
 	}
+
+	if (HealthWidget)
+	{
+		LauncherHealthBar = Cast<UEnemyHealthBar>(HealthWidget);
+		if (LauncherHealthBar)
+		{
+			LauncherHealthBar->fMaxHealth = fLauncherHealth;
+		}
+	}
 }
 
 void ABossLauncher::FireProjectile()
@@ -31,7 +41,7 @@ void ABossLauncher::FireProjectile()
 
 	ABossProjectile* CurProjectile = GetWorld()->SpawnActor<ABossProjectile>(Projectile, SpawnLoc, GetActorRotation());
 	
-	FRotator Rot = FRotationMatrix::MakeFromX(GetActorLocation() - Player->GetActorLocation()).Rotator();
+	FRotator Rot = FRotationMatrix::MakeFromX(Player->GetActorLocation() - GetActorLocation()).Rotator();
 
 	FireFromComponent->SetRelativeRotation(Rot);
 
@@ -51,4 +61,26 @@ void ABossLauncher::FireProjectile()
 	}
 
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ABossLauncher::FireProjectile, fReloadTime, false);
+}
+
+void ABossLauncher::ApplyDamage(float fDamage)
+{
+	fLauncherHealth -= fDamage;
+
+	if (LauncherHealthBar)
+	{
+		LauncherHealthBar->UpdateHealthBar(fDamage);
+	}
+
+	if (fLauncherHealth <= 0)
+	{
+		DestroyLauncher();
+	}
+}
+
+void ABossLauncher::DestroyLauncher()
+{
+	GetWorld()->GetTimerManager().ClearTimer(ReloadTimerHandle);
+
+	Destroy();
 }
