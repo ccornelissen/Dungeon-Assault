@@ -14,17 +14,21 @@ void UEnemyHealthBar::UpdateHealthBar(float Health)
 	{
 		HealthBar->SetPercent(Health / fMaxHealth);
 
-		if (Health < 80)
-		{
-			HealthBar->SetFillColorAndOpacity(MidHealthColor);
-		}
-		else if (Health < 30)
+		if (HealthBar->Percent < 0.3)
 		{
 			HealthBar->SetFillColorAndOpacity(LowHealthColor);
+		}
+		else if (HealthBar->Percent < 0.8)
+		{
+			HealthBar->SetFillColorAndOpacity(MidHealthColor);
 		}
 		else
 		{
 			HealthBar->SetFillColorAndOpacity(FullHealthColor);
 		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No health bar set on enemy UI component"));
 	}
 }

@@ -38,6 +38,7 @@ void UWeaponEquipComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, 
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Hit Boss"));
 			HitBoss->ApplyDamage(fWeaponDamage);
+			bGenerateOverlapEvents = false;
 		}
 
 		ABossLauncher* HitLauncher = Cast<ABossLauncher>(OtherActor);
@@ -46,6 +47,8 @@ void UWeaponEquipComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, 
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Hit Launcher"));
 			HitLauncher->ApplyDamage(fWeaponDamage);
+			bGenerateOverlapEvents = false;
+
 		}
 	}
 }

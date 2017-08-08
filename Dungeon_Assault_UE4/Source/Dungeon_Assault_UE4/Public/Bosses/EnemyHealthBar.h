@@ -20,20 +20,23 @@ class DUNGEON_ASSAULT_UE4_API UEnemyHealthBar : public UUserWidget
 public:
 	void UpdateHealthBar(float Health);
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Health")
+	void SetHealthBar();
+
 	float fMaxHealth;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
-		UProgressBar* HealthBar = nullptr;
+	UProgressBar* HealthBar = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
-		FLinearColor FullHealthColor;
+	FLinearColor FullHealthColor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
-		FLinearColor MidHealthColor;
+	FLinearColor MidHealthColor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
-		FLinearColor LowHealthColor;
+	FLinearColor LowHealthColor;
 	
 	
 	

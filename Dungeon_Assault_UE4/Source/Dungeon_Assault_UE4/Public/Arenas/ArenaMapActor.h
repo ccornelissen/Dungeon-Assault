@@ -10,10 +10,25 @@ class UPaperTileMapComponent;
 class UBoxComponent;
 class UPaperTileSet;
 class UPaperTileMap;
+class ABossBase;
+class ABossLauncher;
+class ADA_Character;
 
-/**
- * 
- */
+USTRUCT()
+struct FTileSpawnData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY()
+	FVector SpawnLocation;
+	UPROPERTY()
+	FRotator SpawnRotation = FRotator(0.0f, 90.0f, -90.0f);
+	UPROPERTY()
+	float fVerticalModifier = 120.0f;
+	UPROPERTY()
+	int32 LayerOfTile = 0;
+};
+
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API AArenaMapActor : public APaperTileMapActor
 {
@@ -24,10 +39,48 @@ class DUNGEON_ASSAULT_UE4_API AArenaMapActor : public APaperTileMapActor
 public:
 	void GenerateMap();
 
+	void SpawnActors();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
+	//Spawning Variables
+	UPROPERTY(EditDefaultsOnly, Category = "Main Bosses")
+	float fBossSpawnHeight = 200.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Support")
+	float fSupportSpawnHeight = 120.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Support")
+	int32 iMinimumOffset = 4;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float fPlayerSpawnHeight = 120.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	int32 iPlayerSpawnDepth = 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Main Bosses")
+	TArray<TSubclassOf<ABossBase>> BossBases;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Launchers")
+	TArray<TSubclassOf<ABossLauncher>> BossLaunchers;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	ADA_Character* PlayerReference = nullptr;
+
+	FTileSpawnData BossSpawnData;
+
+	void SetBossSpawnData(FVector SpawnVec);
+
+	FTileSpawnData PlayerStartData;
+
+	void SetPlayerSpawnData(FVector SpawnVec);
+
+	TArray<struct FTileSpawnData> SupportSpawnDataArray;
+
+	void AddSupportSpawnData(FVector SpawnVec);
 
 	//Map Gen Variables
 	UPROPERTY(EditDefaultsOnly, Category = "Map Generation")

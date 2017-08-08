@@ -21,8 +21,9 @@ ABossProjectile::ABossProjectile()
 
 void ABossProjectile::BeginPlay()
 {
+	Super::BeginPlay();
+
 	GetWorld()->GetTimerManager().SetTimer(LifeTimerHandle, this, &ABossProjectile::Explode, fLifeSpan, false);
-	
 }
 
 void ABossProjectile::MoveProjectile()

@@ -2,7 +2,7 @@
 
 #include "BossBase.h"
 #include "EnemyHealthBar.h"
-#include "UserWidget.h"
+#include "WidgetComponent.h"
 
 // Sets default values
 ABossBase::ABossBase()
@@ -16,13 +16,24 @@ void ABossBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HealthWidget)
+	UWidgetComponent* WidgetComp = FindComponentByClass<UWidgetComponent>();
+	if(WidgetComp)
 	{
-		BaseHealthBar = Cast<UEnemyHealthBar>(HealthWidget);
+		BaseHealthBar = Cast<UEnemyHealthBar>(WidgetComp->GetUserWidgetObject());
+
 		if (BaseHealthBar)
 		{
+			BaseHealthBar->SetHealthBar();
 			BaseHealthBar->fMaxHealth = fBossHealth;
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Cast to health bar failed!"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Lacking the widget comp"));
 	}
 }
 
@@ -39,7 +50,7 @@ void ABossBase::ApplyDamage(float Damage)
 
 	if (BaseHealthBar)
 	{
-		BaseHealthBar->UpdateHealthBar(Damage);
+		BaseHealthBar->UpdateHealthBar(fBossHealth);
 	}
 
 	DeathCheck();

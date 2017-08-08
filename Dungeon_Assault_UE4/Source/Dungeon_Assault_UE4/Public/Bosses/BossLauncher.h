@@ -9,7 +9,6 @@
 class ABossProjectile;
 class ADA_Character;
 class UEnemyHealthBar;
-class UUserWidget;
 
 /**
  * 
@@ -29,9 +28,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Health")
-	TSubclassOf<UUserWidget> HealthWidget = nullptr;
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
 	UEnemyHealthBar* LauncherHealthBar = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Launcher")

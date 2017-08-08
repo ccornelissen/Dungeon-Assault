@@ -14,13 +14,13 @@ void UDAPlayerUI::UpdateHealthBar(float Health)
 	{
 		PlayerHealthBar->SetPercent(Health / fPlayerMaxHealth);
 
-		if (Health < 80)
-		{
-			PlayerHealthBar->SetFillColorAndOpacity(MidHealthColor);
-		}
-		else if (Health < 30)
+		if (PlayerHealthBar->Percent < 0.3)
 		{
 			PlayerHealthBar->SetFillColorAndOpacity(LowHealthColor);
+		}
+		else if (PlayerHealthBar->Percent < 0.8)
+		{
+			PlayerHealthBar->SetFillColorAndOpacity(MidHealthColor);
 		}
 		else
 		{

@@ -5,7 +5,7 @@
 #include "DA_Character.h"
 #include "EngineUtils.h"
 #include "EnemyHealthBar.h"
-#include "UserWidget.h"
+#include "WidgetComponent.h"
 
 ABossLauncher::ABossLauncher()
 {
@@ -16,6 +16,8 @@ ABossLauncher::ABossLauncher()
 
 void ABossLauncher::BeginPlay()
 {
+	Super::BeginPlay();
+
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ABossLauncher::FireProjectile, fReloadTime, false);
 
 	FireFromComponent->SetRelativeLocation(FVector::ZeroVector);
@@ -25,14 +27,28 @@ void ABossLauncher::BeginPlay()
 		Player = *ActorItr;
 	}
 
-	if (HealthWidget)
+	UWidgetComponent* WidgetComp = FindComponentByClass<UWidgetComponent>();
+
+	if (WidgetComp)
 	{
-		LauncherHealthBar = Cast<UEnemyHealthBar>(HealthWidget);
+		LauncherHealthBar = Cast<UEnemyHealthBar>(WidgetComp->GetUserWidgetObject());
+
 		if (LauncherHealthBar)
 		{
+			LauncherHealthBar->SetHealthBar();
+
 			LauncherHealthBar->fMaxHealth = fLauncherHealth;
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Cast to health bar failed!"));
+		}
 	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Lacking the widget comp"));
+	}
+	
 }
 
 void ABossLauncher::FireProjectile()
@@ -69,7 +85,7 @@ void ABossLauncher::ApplyDamage(float fDamage)
 
 	if (LauncherHealthBar)
 	{
-		LauncherHealthBar->UpdateHealthBar(fDamage);
+		LauncherHealthBar->UpdateHealthBar(fLauncherHealth);
 	}
 
 	if (fLauncherHealth <= 0)

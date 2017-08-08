@@ -7,7 +7,6 @@
 #include "BossBase.generated.h"
 
 class UEnemyHealthBar;
-class UUserWidget;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API ABossBase : public ACharacter
@@ -26,9 +25,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Health")
-	TSubclassOf<UUserWidget> HealthWidget = nullptr;
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
 	UEnemyHealthBar* BaseHealthBar = nullptr;
 
 private:
