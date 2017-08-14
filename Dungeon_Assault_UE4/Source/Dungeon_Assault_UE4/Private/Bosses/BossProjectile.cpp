@@ -45,8 +45,6 @@ void ABossProjectile::Explode()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Exploding"));
 
-	//SphereCollision->SetSphereRadius(SphereCollision->GetScaledSphereRadius() * fExplositionScale, true);
-
 	GetWorld()->GetTimerManager().SetTimer(AnimTimerHandle, this, &ABossProjectile::DestroyProjectile, fExplosionAnimationLength, false);
 }
 
@@ -72,6 +70,7 @@ void ABossProjectile::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActo
 
 	if (HitCharacter)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Stopping"));
 		HitCharacter->DATakeDamage(fDamage);
 
 		BookComponent->SetPhysicsLinearVelocity(FVector::ZeroVector);

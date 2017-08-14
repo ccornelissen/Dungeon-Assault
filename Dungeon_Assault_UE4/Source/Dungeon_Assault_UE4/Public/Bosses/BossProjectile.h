@@ -35,6 +35,8 @@ public:
 	
 	void MoveProjectile();
 
+	UPaperFlipbookComponent* BookComponent;
+
 protected:
 
 	// Called when the game starts or when spawned
@@ -59,8 +61,6 @@ private:
 	ADA_Character* Player;
 
 	FVector FireVector;
-
-	UPaperFlipbookComponent* BookComponent;
 	
 	FTimerHandle LifeTimerHandle;
 

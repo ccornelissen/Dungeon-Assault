@@ -9,6 +9,7 @@
 class ABossProjectile;
 class ADA_Character;
 class UEnemyHealthBar;
+class ABossBase;
 
 /**
  * 
@@ -35,7 +36,7 @@ protected:
 	float fLauncherHealth = 50.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	TSubclassOf<ABossProjectile> Projectile = nullptr;;
+	TSubclassOf<ABossProjectile> Projectile = nullptr;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	float fSpawnDistance = 300.0f;
@@ -55,4 +56,5 @@ private:
 	void DestroyLauncher();
 
 	ADA_Character* Player;
+	ABossBase* MainBoss;
 };

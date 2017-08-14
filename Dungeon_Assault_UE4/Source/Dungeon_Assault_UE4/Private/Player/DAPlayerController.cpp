@@ -25,4 +25,7 @@ void ADAPlayerController::BeginPlay()
 		}
 	}
 	
+	bShowMouseCursor = true;
+
+	SetVirtualJoystickVisibility(true);
 }

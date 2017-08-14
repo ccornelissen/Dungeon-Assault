@@ -6,6 +6,8 @@
 #include "EngineUtils.h"
 #include "EnemyHealthBar.h"
 #include "WidgetComponent.h"
+#include "BossBase.h"
+#include "PaperFlipbookComponent.h"
 
 ABossLauncher::ABossLauncher()
 {
@@ -25,6 +27,11 @@ void ABossLauncher::BeginPlay()
 	for (TActorIterator<ADA_Character> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		Player = *ActorItr;
+	}
+
+	for (TActorIterator<ABossBase> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		MainBoss = *ActorItr;
 	}
 
 	UWidgetComponent* WidgetComp = FindComponentByClass<UWidgetComponent>();
@@ -68,7 +75,6 @@ void ABossLauncher::FireProjectile()
 	if (Player)
 	{
 		CurProjectile->SetPlayer(*Player);
-
 		CurProjectile->MoveProjectile();
 	}
 	else
@@ -76,6 +82,17 @@ void ABossLauncher::FireProjectile()
 		UE_LOG(LogTemp, Error, TEXT("Launcher isn't get a reference to the player"));
 	}
 
+	if (CurProjectile->BookComponent && MainBoss)
+	{
+		CurProjectile->BookComponent->MoveIgnoreActors.Add(MainBoss);
+
+		CurProjectile->BookComponent->MoveIgnoreActors.Add(this);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Not firing projectile"));
+	}
+		
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ABossLauncher::FireProjectile, fReloadTime, false);
 }
 

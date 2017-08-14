@@ -3,6 +3,8 @@
 #include "BossBase.h"
 #include "EnemyHealthBar.h"
 #include "WidgetComponent.h"
+#include "BossLauncher.h"
+#include "BossMelee.h"
 
 // Sets default values
 ABossBase::ABossBase()
@@ -35,6 +37,9 @@ void ABossBase::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Lacking the widget comp"));
 	}
+
+	SetComponents();
+	SpawnComponents();
 }
 
 // Called every frame
@@ -60,7 +65,48 @@ void ABossBase::DeathCheck()
 {
 	if (fBossHealth <= 0)
 	{
+		for (int i = 0; i < SpawnedActors.Num(); i++)
+		{
+			if (SpawnedActors.IsValidIndex(i))
+			{
+				if (SpawnedActors[i] != nullptr)
+				{
+					SpawnedActors[i]->Destroy();
+				}
+			}
+		}
+
 		Destroy();
+	}
+}
+
+void ABossBase::SpawnComponents()
+{
+	if (HeadComponent)
+	{
+		ABossLauncher* BossHead = GetWorld()->SpawnActor<ABossLauncher>(LauncherToSpawn, HeadComponent->GetComponentLocation(), HeadComponent->GetComponentRotation());
+
+		SpawnedActors.Add(BossHead);
+	}
+
+	if (TailComponent)
+	{
+		ABossMelee* Tail = GetWorld()->SpawnActor<ABossMelee>(MeleeToSpawn, TailComponent->GetComponentLocation(), TailComponent->GetComponentRotation());
+
+		SpawnedActors.Add(Tail);
+	}
+	
+	for (int i = 0; i < ArmComponents.Num(); i++)
+	{
+		if (ArmComponents.IsValidIndex(i))
+		{
+			if (ArmComponents[i] != nullptr)
+			{
+				ABossMelee* TempMelee = GetWorld()->SpawnActor<ABossMelee>(MeleeToSpawn, ArmComponents[i]->GetComponentLocation(), ArmComponents[i]->GetComponentRotation());
+
+				SpawnedActors.Add(TempMelee);
+			}
+		}
 	}
 }
 

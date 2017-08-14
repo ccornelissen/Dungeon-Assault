@@ -7,6 +7,9 @@
 #include "BossBase.generated.h"
 
 class UEnemyHealthBar;
+class ABossLauncher;
+class ABossMelee;
+class USceneComponent;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API ABossBase : public ACharacter
@@ -21,16 +24,39 @@ public:
 
 	void ApplyDamage(float Damage);
 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "BossComponents")
+	void SetComponents();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
 	UEnemyHealthBar* BaseHealthBar = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossComponents")
+	TArray<USceneComponent*> ArmComponents;
+
+	UPROPERTY(EditDefaultsOnly, Category = "BossComponents")
+	TSubclassOf<ABossLauncher> LauncherToSpawn = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "BossComponents")
+	TSubclassOf<ABossMelee> MeleeToSpawn = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossComponents")
+	USceneComponent* TailComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossComponents")
+	USceneComponent* HeadComponent;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	float fBossHealth = 100.0f;
 	
 	void DeathCheck();
+
+	TArray<AActor*> SpawnedActors;
+
+	void SpawnComponents();
 };
