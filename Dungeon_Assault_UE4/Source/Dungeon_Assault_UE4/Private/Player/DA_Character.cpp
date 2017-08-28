@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "WeaponEquipComponent.h"
+#include "PaperFlipbookComponent.h"
 #include "DAPlayerUI.h"
 
 // Sets default values
@@ -42,9 +43,10 @@ ADA_Character::ADA_Character()
 	TopDownCamera->SetupAttachment(CameraArm, USpringArmComponent::SocketName);
 	TopDownCamera->bUsePawnControlRotation = false;
 
-	//Adding weapon component
-	WeaponComp = CreateDefaultSubobject<UWeaponEquipComponent>(TEXT("Weapon"));
-	WeaponComp->SetupAttachment(RootComponent);
+	//Create weapon slot
+	CurWeapon = CreateDefaultSubobject<UWeaponEquipComponent>(TEXT("MainHandWeapon"));
+	CurWeapon->SetupAttachment(RootComponent);
+	CurWeapon->bGenerateOverlapEvents = false;
 }
 
 // Called when the game starts or when spawned
@@ -57,6 +59,25 @@ void ADA_Character::BeginPlay()
 		PlayerUI->fPlayerMaxHealth = fPlayerHealth;
 	}
 	
+	
+	if (CurWeapon && FirstWeapon)
+	{
+		if (FirstWeapon->IsChildOf(UWeaponEquipComponent::StaticClass()))
+		{
+			CurWeapon->WeaponInfo = FirstWeapon->GetDefaultObject<UWeaponEquipComponent>()->WeaponInfo;
+
+			CurWeapon->SetWeapon();
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CurWeapon or First Weapon returning null"));
+	}
+
+	if (FirstOffhand)
+	{
+		//CurOffhand = FirstOffhand;
+	}
 }
 
 
@@ -98,6 +119,7 @@ void ADA_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("WeaponAttack", IE_Pressed, this, &ADA_Character::UseWeapon);
+	PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &ADA_Character::SwitchWeapon);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ADA_Character::MoveVertical);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ADA_Character::MoveHorizontal);
@@ -110,7 +132,51 @@ void ADA_Character::MoveVertical(float Value)
 
 void ADA_Character::UseWeapon()
 {
-	WeaponComp->Attack();
+	if (CurWeapon)
+	{
+		CurWeapon->Attack();
+	}
+}
+
+void ADA_Character::SwitchWeapon()
+{
+	if (bFirstWeaponEquiped)
+	{
+		if (CurWeapon && SecondWeapon)
+		{
+			if (SecondWeapon->IsChildOf(UWeaponEquipComponent::StaticClass()))
+			{
+				CurWeapon->WeaponInfo = SecondWeapon->GetDefaultObject<UWeaponEquipComponent>()->WeaponInfo;
+
+				CurWeapon->SetWeapon();
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("CurWeapon or Second Weapon returning null"));
+		}
+
+		bFirstWeaponEquiped = false;
+	}
+	else
+	{
+		if (CurWeapon && FirstWeapon)
+		{
+			if (FirstWeapon->IsChildOf(UWeaponEquipComponent::StaticClass()))
+			{
+				CurWeapon->WeaponInfo = FirstWeapon->GetDefaultObject<UWeaponEquipComponent>()->WeaponInfo;
+
+				CurWeapon->SetWeapon();
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("CurWeapon or First Weapon returning null"));
+		}
+
+		bFirstWeaponEquiped = true;
+	}
+
 }
 
 void ADA_Character::MoveHorizontal(float Value)

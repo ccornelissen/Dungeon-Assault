@@ -28,6 +28,14 @@ void UWeaponEquipComponent::Attack()
 	}
 }
 
+void UWeaponEquipComponent::SetWeapon()
+{
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+
+	SetFlipbook(WeaponInfo.IdleBook);
+
+}
+
 void UWeaponEquipComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor != nullptr)
@@ -37,7 +45,7 @@ void UWeaponEquipComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, 
 		if (HitBoss != nullptr)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Hit Boss"));
-			HitBoss->ApplyDamage(fWeaponDamage);
+			HitBoss->ApplyDamage(WeaponInfo.fWeaponDamage);
 			bGenerateOverlapEvents = false;
 		}
 
@@ -46,7 +54,7 @@ void UWeaponEquipComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, 
 		if (HitLauncher != nullptr)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Hit Launcher"));
-			HitLauncher->ApplyDamage(fWeaponDamage);
+			HitLauncher->ApplyDamage(WeaponInfo.fWeaponDamage);
 			bGenerateOverlapEvents = false;
 
 		}
@@ -63,9 +71,9 @@ void UWeaponEquipComponent::AnimSwitch(EWeaponAnimState SwitchState)
 
 		bGenerateOverlapEvents = false;
 
-		if (IdleBook != nullptr)
+		if (WeaponInfo.IdleBook != nullptr)
 		{
-			SetFlipbook(IdleBook);
+			SetFlipbook(WeaponInfo.IdleBook);
 		}
 
 		bCanSwing = true;
@@ -74,12 +82,12 @@ void UWeaponEquipComponent::AnimSwitch(EWeaponAnimState SwitchState)
 
 	case EWeaponAnimState::AS_Swing:
 
-		if (SwingBook != nullptr)
+		if (WeaponInfo.SwingBook != nullptr)
 		{
-			SetFlipbook(SwingBook);
+			SetFlipbook(WeaponInfo.SwingBook);
 		}
 
-		GetWorld()->GetTimerManager().SetTimer(AnimTimerHandle, this, &UWeaponEquipComponent::SwitchToIdle, fSwingTimer, false);
+		GetWorld()->GetTimerManager().SetTimer(AnimTimerHandle, this, &UWeaponEquipComponent::SwitchToIdle, WeaponInfo.fSwingTimer, false);
 		
 		return;
 	}

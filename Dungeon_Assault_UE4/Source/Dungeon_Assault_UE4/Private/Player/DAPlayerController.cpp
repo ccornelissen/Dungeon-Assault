@@ -17,7 +17,7 @@ void ADAPlayerController::BeginPlay()
 
 		PlayerUI->AddToViewport(9999);
 
-		ADA_Character* ControlledCharacter = Cast<ADA_Character>(GetControlledPawn());
+		ADA_Character* ControlledCharacter = Cast<ADA_Character>(GetPawn());
 
 		if (ControlledCharacter)
 		{

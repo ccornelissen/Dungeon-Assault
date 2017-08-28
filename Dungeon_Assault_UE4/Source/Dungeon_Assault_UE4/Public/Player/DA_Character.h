@@ -8,15 +8,15 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class UPaperFlipbookComponent;
 class UWeaponEquipComponent;
+class UShieldEquipComponent;
 class UDAPlayerUI;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API ADA_Character : public ACharacter
 {
 	GENERATED_BODY()
-
-	
 
 public:
 	// Sets default values for this character's properties
@@ -37,6 +37,19 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	//Player weapons
+	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
+	TSubclassOf<UPaperFlipbookComponent> FirstWeapon = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
+	TSubclassOf<UPaperFlipbookComponent> FirstOffhand = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
+	TSubclassOf<UPaperFlipbookComponent> SecondWeapon = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
+	TSubclassOf<UPaperFlipbookComponent> SecondOffhand = nullptr;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -46,8 +59,16 @@ protected:
 
 	void UseWeapon();
 
+	void SwitchWeapon();
+
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	float fPlayerHealth = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	UWeaponEquipComponent* CurWeapon = nullptr;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	UShieldEquipComponent* CurShield = nullptr;
+	
 
 private:
 	/** Top down camera */
@@ -57,9 +78,9 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraArm;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Equipment", meta = (AllowPrivateAccess = "true"))
-	UWeaponEquipComponent* WeaponComp;
+
+	bool bFirstWeaponEquiped = true;
+	bool bFirstOffhandEquiped = true;
 
 	UDAPlayerUI* PlayerUI = nullptr;
 };

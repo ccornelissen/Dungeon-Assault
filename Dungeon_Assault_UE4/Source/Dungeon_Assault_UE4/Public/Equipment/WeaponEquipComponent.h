@@ -17,7 +17,25 @@ enum class EWeaponAnimState : uint8
 	AS_Max
 };
 
-UCLASS()
+USTRUCT(BlueprintType)
+struct FWeaponVariables
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float fWeaponDamage = 20.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	float fSwingTimer = 0.5f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UPaperFlipbook* IdleBook;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UPaperFlipbook* SwingBook;
+};
+
+UCLASS(Blueprintable)
 class DUNGEON_ASSAULT_UE4_API UWeaponEquipComponent : public UPaperFlipbookComponent
 {
 	GENERATED_BODY()
@@ -27,26 +45,21 @@ public:
 
 	void Attack();
 
-private:
-	UPROPERTY(EditDefaultsOnly, Category = "Damage")
-	float fWeaponDamage = 20.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponInfo")
+	FWeaponVariables WeaponInfo;
 
+	//Called when player changes weapons
+	void SetWeapon();
+
+private:
 	UFUNCTION()
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	FVector StartLoc;
 
 	//Anim Variables
-	UPROPERTY(EditDefaultsOnly, Category = "Animation")
-	float fSwingTimer = 0.5f;
 
 	FTimerHandle AnimTimerHandle;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Animation")
-	UPaperFlipbook* IdleBook;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Animation")
-	UPaperFlipbook* SwingBook;
 
 	EWeaponAnimState CurrentAnimState = EWeaponAnimState::AS_Idle;
 
