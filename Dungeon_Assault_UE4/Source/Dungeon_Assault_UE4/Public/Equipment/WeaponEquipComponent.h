@@ -20,7 +20,7 @@ enum class EWeaponAnimState : uint8
 USTRUCT(BlueprintType)
 struct FWeaponVariables
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float fWeaponDamage = 20.0f;
@@ -58,7 +58,6 @@ private:
 	FVector StartLoc;
 
 	//Anim Variables
-
 	FTimerHandle AnimTimerHandle;
 
 	EWeaponAnimState CurrentAnimState = EWeaponAnimState::AS_Idle;

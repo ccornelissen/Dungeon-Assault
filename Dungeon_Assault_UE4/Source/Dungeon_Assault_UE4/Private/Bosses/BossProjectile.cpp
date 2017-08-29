@@ -50,6 +50,8 @@ void ABossProjectile::Explode()
 
 void ABossProjectile::DestroyProjectile()
 {
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+
 	Destroy();
 }
 
