@@ -31,6 +31,9 @@ struct FShieldVariables
 
 	UPROPERTY(EditDefaultsOnly, Category = "Shield")
 	float fBlockPercent = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UPaperFlipbook* IdleBook;
 };
 
 
@@ -43,13 +46,15 @@ class DUNGEON_ASSAULT_UE4_API UShieldEquipComponent : public UPaperFlipbookCompo
 
 public:
 
+	void SetShield();
+
 	void Block();
 
 	void UnBlock();
 
-	void SetIdle(FVector InVec, FRotator InRot);
+	void SetIdlePoint(USceneComponent &SceneRef);
 
-	void SetBlocking(FVector InVec, FRotator InRot);
+	void SetBlockingPoint(USceneComponent &SceneRef);
 
 	UPROPERTY(EditDefaultsOnly, Category = "ShieldInfo")
 	FShieldVariables ShieldInfo;
@@ -60,11 +65,9 @@ private:
 	UFUNCTION()
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	FVector IdlePosition;
-	FRotator IdleRotation;
+	USceneComponent* IdlePoint;
 
-	FVector BlockPosition;
-	FRotator BlockRotation;
+	USceneComponent* BlockingPoint;
 
 	ADA_Character* MyPlayer = nullptr;
 	

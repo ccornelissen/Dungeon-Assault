@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "WeaponEquipComponent.h"
+#include "ShieldEquipComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "DAPlayerUI.h"
 
@@ -47,6 +48,16 @@ ADA_Character::ADA_Character()
 	CurWeapon = CreateDefaultSubobject<UWeaponEquipComponent>(TEXT("MainHandWeapon"));
 	CurWeapon->SetupAttachment(RootComponent);
 	CurWeapon->bGenerateOverlapEvents = false;
+
+	CurShield = CreateDefaultSubobject<UShieldEquipComponent>(TEXT("ShieldSlot"));
+	CurShield->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	CurShield->bGenerateOverlapEvents = false;
+
+	ShieldIdlePoint = CreateDefaultSubobject<USceneComponent>(TEXT("ShieldIdlePoint"));
+	ShieldIdlePoint->SetupAttachment(RootComponent);
+
+	ShieldBlockPoint = CreateDefaultSubobject<USceneComponent>(TEXT("ShieldBlockPoint"));
+	ShieldBlockPoint->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -74,9 +85,22 @@ void ADA_Character::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("CurWeapon or First Weapon returning null"));
 	}
 
-	if (FirstOffhand)
+	if (CurShield && FirstOffhand)
 	{
-		//CurOffhand = FirstOffhand;
+		if (FirstOffhand->IsChildOf(UShieldEquipComponent::StaticClass()))
+		{
+			CurShield->ShieldInfo = FirstOffhand->GetDefaultObject<UShieldEquipComponent>()->ShieldInfo;
+
+			CurShield->SetShield();
+
+			if (ShieldIdlePoint && ShieldBlockPoint)
+			{
+				CurShield->SetIdlePoint(*ShieldIdlePoint);
+				CurShield->SetBlockingPoint(*ShieldBlockPoint);
+			}
+
+			CurShield->UnBlock();
+		}
 	}
 }
 
@@ -120,6 +144,8 @@ void ADA_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAction("WeaponAttack", IE_Pressed, this, &ADA_Character::UseWeapon);
 	PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &ADA_Character::SwitchWeapon);
+	PlayerInputComponent->BindAction("AltAction", IE_Pressed, this, &ADA_Character::OffhandUsed);
+	PlayerInputComponent->BindAction("AltAction", IE_Released, this, &ADA_Character::OffhandReleased);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ADA_Character::MoveVertical);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ADA_Character::MoveHorizontal);
@@ -135,6 +161,22 @@ void ADA_Character::UseWeapon()
 	if (CurWeapon)
 	{
 		CurWeapon->Attack();
+	}
+}
+
+void ADA_Character::OffhandUsed()
+{
+	if (CurShield->ShieldInfo.IdleBook != nullptr)
+	{
+		CurShield->Block();
+	}
+}
+
+void ADA_Character::OffhandReleased()
+{
+	if (CurShield->ShieldInfo.IdleBook != nullptr)
+	{
+		CurShield->UnBlock();
 	}
 }
 
@@ -175,6 +217,43 @@ void ADA_Character::SwitchWeapon()
 		}
 
 		bFirstWeaponEquiped = true;
+	}
+
+	if (bFirstOffhandEquiped)
+	{
+		if (CurShield && SecondOffhand)
+		{
+			if (SecondOffhand->IsChildOf(UShieldEquipComponent::StaticClass()))
+			{
+				CurShield->ShieldInfo = SecondOffhand->GetDefaultObject<UShieldEquipComponent>()->ShieldInfo;
+
+				CurShield->SetShield();
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("CurShield or Second Offhand returning null"));
+		}
+
+		bFirstOffhandEquiped = false;
+	}
+	else
+	{
+		if (CurShield && FirstOffhand)
+		{
+			if (FirstOffhand->IsChildOf(UShieldEquipComponent::StaticClass()))
+			{
+				CurShield->ShieldInfo = FirstOffhand->GetDefaultObject<UShieldEquipComponent>()->ShieldInfo;
+
+				CurShield->SetShield();
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("CurShield or First Offhand returning null"));
+		}
+
+		bFirstOffhandEquiped = true;
 	}
 
 }

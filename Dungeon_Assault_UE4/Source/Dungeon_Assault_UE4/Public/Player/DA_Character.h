@@ -59,7 +59,17 @@ protected:
 
 	void UseWeapon();
 
+	void OffhandUsed();
+
+	void OffhandReleased();
+
 	void SwitchWeapon();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shield")
+	USceneComponent* ShieldIdlePoint = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shield")
+	USceneComponent* ShieldBlockPoint = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	float fPlayerHealth = 100.0f;

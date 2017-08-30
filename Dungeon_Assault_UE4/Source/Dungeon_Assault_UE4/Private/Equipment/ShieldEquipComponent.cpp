@@ -10,6 +10,13 @@ UShieldEquipComponent::UShieldEquipComponent()
 	bGenerateOverlapEvents = false;
 }
 
+void UShieldEquipComponent::SetShield()
+{
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+
+	SetFlipbook(ShieldInfo.IdleBook);
+}
+
 void UShieldEquipComponent::Block()
 {
 	StateSwitch(EShieldState::SS_Blocking);
@@ -20,16 +27,14 @@ void UShieldEquipComponent::UnBlock()
 	StateSwitch(EShieldState::SS_Side);
 }
 
-void UShieldEquipComponent::SetIdle(FVector InVec, FRotator InRot)
+void UShieldEquipComponent::SetIdlePoint(USceneComponent &SceneRef)
 {
-	IdlePosition = InVec;
-	IdleRotation = InRot;
+	IdlePoint = &SceneRef;
 }
 
-void UShieldEquipComponent::SetBlocking(FVector InVec, FRotator InRot)
+void UShieldEquipComponent::SetBlockingPoint(USceneComponent &SceneRef)
 {
-	BlockPosition = InVec;
-	BlockRotation = InRot;
+	BlockingPoint = &SceneRef;
 }
 
 void UShieldEquipComponent::SetPlayer(ADA_Character &InPlayer)
@@ -45,6 +50,9 @@ void UShieldEquipComponent::OnOverlapBegin(UPrimitiveComponent * OverlappedComp,
 
 		if (InComingProjectile)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Shielding Projectile"))
+
+			InComingProjectile->Stop();
 			InComingProjectile->DestroyProjectile();
 		}
 	}
@@ -59,8 +67,15 @@ void UShieldEquipComponent::StateSwitch(EShieldState SwitchState)
 	{
 	case EShieldState::SS_Blocking:
 
-		SetWorldLocation(BlockPosition);
-		SetWorldRotation(BlockRotation);
+		if (BlockingPoint)
+		{
+			FVector BlockPosition = BlockingPoint->GetComponentLocation();
+
+			FRotator BlockRotation = BlockingPoint->GetComponentRotation();
+
+			SetWorldLocation(BlockPosition);
+			SetWorldRotation(BlockRotation);
+		}
 
 		bGenerateOverlapEvents = true;
 
@@ -68,8 +83,14 @@ void UShieldEquipComponent::StateSwitch(EShieldState SwitchState)
 
 	case EShieldState::SS_Side:
 
-		SetWorldLocation(IdlePosition);
-		SetWorldRotation(IdleRotation);
+		if (IdlePoint)
+		{
+			FVector IdlePosition = IdlePoint->GetComponentLocation();
+			FRotator IdleRotation = IdlePoint->GetComponentRotation();
+
+			SetWorldLocation(IdlePosition);
+			SetWorldRotation(IdleRotation);
+		}
 
 		bGenerateOverlapEvents = false;
 

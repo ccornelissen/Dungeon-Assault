@@ -37,6 +37,8 @@ public:
 
 	void DestroyProjectile();
 
+	void Stop();
+
 	UPaperFlipbookComponent* BookComponent;
 
 protected:

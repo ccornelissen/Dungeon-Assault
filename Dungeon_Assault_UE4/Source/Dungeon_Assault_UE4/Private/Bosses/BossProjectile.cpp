@@ -43,8 +43,6 @@ void ABossProjectile::MoveProjectile()
 
 void ABossProjectile::Explode()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Exploding"));
-
 	GetWorld()->GetTimerManager().SetTimer(AnimTimerHandle, this, &ABossProjectile::DestroyProjectile, fExplosionAnimationLength, false);
 }
 
@@ -53,6 +51,11 @@ void ABossProjectile::DestroyProjectile()
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 
 	Destroy();
+}
+
+void ABossProjectile::Stop()
+{
+	BookComponent->SetPhysicsLinearVelocity(FVector::ZeroVector);
 }
 
 
@@ -72,10 +75,10 @@ void ABossProjectile::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActo
 
 	if (HitCharacter)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Stopping"));
+		UE_LOG(LogTemp, Warning, TEXT("Projectile Damaging player"));
 		HitCharacter->DATakeDamage(fDamage);
 
-		BookComponent->SetPhysicsLinearVelocity(FVector::ZeroVector);
+		Stop();
 
 		GetWorld()->GetTimerManager().SetTimer(AnimTimerHandle, this, &ABossProjectile::DestroyProjectile, fExplosionAnimationLength, false);
 	}
