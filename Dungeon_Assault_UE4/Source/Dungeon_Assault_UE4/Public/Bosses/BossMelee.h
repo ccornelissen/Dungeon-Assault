@@ -44,6 +44,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Melee")
 	float fDamage = 20.0f;
 
+	float fMaxDamage;
+
 	//How ofter the boss will swing
 	UPROPERTY(EditDefaultsOnly, Category = "Melee")
 	float fSwingReload = 10.0f;

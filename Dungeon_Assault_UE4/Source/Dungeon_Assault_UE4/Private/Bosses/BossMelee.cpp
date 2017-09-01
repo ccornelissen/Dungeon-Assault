@@ -4,6 +4,7 @@
 #include "DA_Character.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperFlipbook.h"
+#include "ShieldEquipComponent.h"
 
 ABossMelee::ABossMelee()
 {
@@ -17,12 +18,22 @@ void ABossMelee::BeginPlay()
 {
 	Super::BeginPlay();
 
+	fMaxDamage = fDamage;
+
 	GetWorld()->GetTimerManager().SetTimer(SwingTimerHandle, this, &ABossMelee::Attack, fSwingReload);
 }
 
 void ABossMelee::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	if (OtherActor)
+	UShieldEquipComponent* HitComp = Cast<UShieldEquipComponent>(OtherComp);
+
+	ADA_Character* HitCharacter = Cast<ADA_Character>(OtherActor);
+
+	if (HitComp)
+	{
+		fDamage = 0.0f;
+	}
+	else if (HitCharacter)
 	{
 		ADA_Character* Player = Cast<ADA_Character>(OtherActor);
 
@@ -36,6 +47,9 @@ void ABossMelee::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * O
 void ABossMelee::Attack()
 {
 	BookComponent->bGenerateOverlapEvents = true;
+
+	fDamage = fMaxDamage;
+
 	AnimSwitch(EBossMeleeAnimState::AS_Swing);
 }
 

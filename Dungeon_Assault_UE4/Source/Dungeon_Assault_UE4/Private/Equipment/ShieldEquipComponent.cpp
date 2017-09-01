@@ -44,18 +44,18 @@ void UShieldEquipComponent::SetPlayer(ADA_Character &InPlayer)
 
 void UShieldEquipComponent::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	if (OtherActor)
-	{
-		ABossProjectile* InComingProjectile = Cast<ABossProjectile>(OtherActor);
+//	if (OtherActor)
+//	{
+	//	ABossProjectile* InComingProjectile = Cast<ABossProjectile>(OtherActor);
 
-		if (InComingProjectile)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Shielding Projectile"))
-
-			InComingProjectile->Stop();
-			InComingProjectile->DestroyProjectile();
-		}
-	}
+	//	if (InComingProjectile)
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("Shielding Projectile"))
+//
+	//		InComingProjectile->Stop();
+	//		InComingProjectile->DestroyProjectile();
+	//	}
+	//}
 
 }
 

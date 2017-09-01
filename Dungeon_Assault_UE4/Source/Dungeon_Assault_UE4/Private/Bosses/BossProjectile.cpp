@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "EngineUtils.h"
 #include "PaperFlipbookComponent.h"
+#include "ShieldEquipComponent.h"
 
 ABossProjectile::ABossProjectile()
 {
@@ -71,9 +72,19 @@ void ABossProjectile::SetFireVector(FVector VectorToSet)
 
 void ABossProjectile::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
+	UShieldEquipComponent* HitComp = Cast<UShieldEquipComponent>(OtherComp);
+
 	ADA_Character* HitCharacter = Cast<ADA_Character>(OtherActor);
 
-	if (HitCharacter)
+	if (HitComp)
+	{
+		fDamage = 0.0f;
+
+		Stop();
+
+		GetWorld()->GetTimerManager().SetTimer(AnimTimerHandle, this, &ABossProjectile::DestroyProjectile, fExplosionAnimationLength, false);
+	}
+	else if (HitCharacter)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Projectile Damaging player"));
 		HitCharacter->DATakeDamage(fDamage);
