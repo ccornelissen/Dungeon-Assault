@@ -142,17 +142,27 @@ void ADA_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInput = PlayerInputComponent;
+
 	PlayerInputComponent->BindAction("WeaponAttack", IE_Pressed, this, &ADA_Character::UseWeapon);
 	PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &ADA_Character::SwitchWeapon);
 	PlayerInputComponent->BindAction("AltAction", IE_Pressed, this, &ADA_Character::OffhandUsed);
 	PlayerInputComponent->BindAction("AltAction", IE_Released, this, &ADA_Character::OffhandReleased);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ADA_Character::MoveVertical);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ADA_Character::MoveHorizontal);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ADA_Character::MoveVertical);
 }
 
 void ADA_Character::MoveVertical(float Value)
 {
+	TurnToFace();
+
+	if (Value != 0)
+	{
+		Value = fPlayerSpeed;
+	}
+
+
 	AddMovementInput(GetActorForwardVector(), Value);
 }
 
@@ -258,9 +268,29 @@ void ADA_Character::SwitchWeapon()
 
 }
 
-void ADA_Character::MoveHorizontal(float Value)
+void ADA_Character::TurnToFace()
 {
-	AddMovementInput(GetActorRightVector(), Value);
+	float fToRotate;
+
+	if (PlayerInput)
+	{
+		float fForward = PlayerInput->GetAxisValue("MoveForward");
+		float fRight = PlayerInput->GetAxisValue("MoveRight");
+
+		fToRotate = atan2f(fRight, fForward);
+
+		fToRotate = FMath::RadiansToDegrees(fToRotate);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Player input returning null!"));
+	}
+
+	FRotator StartRot = GetActorRotation();
+
+	FRotator NewRotation = FRotator(StartRot.Pitch, fToRotate, StartRot.Roll);
+
+	SetActorRotation(NewRotation);
 }
 
 

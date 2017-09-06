@@ -54,7 +54,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void MoveHorizontal(float Value);
 	void MoveVertical(float Value);
 
 	void UseWeapon();
@@ -64,6 +63,11 @@ protected:
 	void OffhandReleased();
 
 	void SwitchWeapon();
+
+	void TurnToFace();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player Variables")
+	float fPlayerSpeed = 5.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Shield")
 	USceneComponent* ShieldIdlePoint = nullptr;
@@ -91,6 +95,8 @@ private:
 
 	bool bFirstWeaponEquiped = true;
 	bool bFirstOffhandEquiped = true;
+
+	UInputComponent* PlayerInput;
 
 	UDAPlayerUI* PlayerUI = nullptr;
 };
