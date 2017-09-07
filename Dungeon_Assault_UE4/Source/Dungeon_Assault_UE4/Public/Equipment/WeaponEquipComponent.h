@@ -9,6 +9,7 @@
 /**
  * 
  */
+
 UENUM()
 enum class EWeaponAnimState : uint8
 {
@@ -33,7 +34,15 @@ struct FWeaponVariables
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UPaperFlipbook* SwingBook;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	bool bCanDeflect = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	float fLeechPercent = 0.0f;
 };
+
+class ADA_Character;
 
 UCLASS(Blueprintable)
 class DUNGEON_ASSAULT_UE4_API UWeaponEquipComponent : public UPaperFlipbookComponent
@@ -51,6 +60,12 @@ public:
 	//Called when player changes weapons
 	void SetWeapon();
 
+	float GetLeechPercent();
+
+	bool CanDeflect();
+
+	void SetPlayer(ADA_Character &CharacterToSet);
+
 private:
 	UFUNCTION()
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -65,6 +80,8 @@ private:
 	void AnimSwitch(EWeaponAnimState SwitchState);
 
 	bool bCanSwing = true;
+
+	ADA_Character* MyPlayer;
 
 	void SwitchToIdle();
 };

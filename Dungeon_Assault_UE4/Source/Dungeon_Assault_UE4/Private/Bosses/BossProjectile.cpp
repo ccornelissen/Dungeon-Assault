@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "EngineUtils.h"
 #include "PaperFlipbookComponent.h"
+#include "WeaponEquipComponent.h"
 #include "ShieldEquipComponent.h"
 
 ABossProjectile::ABossProjectile()
@@ -74,9 +75,28 @@ void ABossProjectile::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActo
 {
 	UShieldEquipComponent* HitComp = Cast<UShieldEquipComponent>(OtherComp);
 
+	UWeaponEquipComponent* WeapComp = Cast<UWeaponEquipComponent>(OtherComp);
+
 	ADA_Character* HitCharacter = Cast<ADA_Character>(OtherActor);
 
-	if (HitComp)
+	bool bWeaponDeflect = false;
+
+	if (WeapComp)
+	{
+		bWeaponDeflect = WeapComp->CanDeflect();
+	}
+
+	if (bWeaponDeflect)
+	{
+		fDamage = 0.0f;
+
+		UE_LOG(LogTemp, Warning, TEXT("Reflecting"));
+
+		Stop();
+
+		GetWorld()->GetTimerManager().SetTimer(AnimTimerHandle, this, &ABossProjectile::DestroyProjectile, fExplosionAnimationLength, false);
+	}
+	else if (HitComp)
 	{
 		fDamage = 0.0f;
 

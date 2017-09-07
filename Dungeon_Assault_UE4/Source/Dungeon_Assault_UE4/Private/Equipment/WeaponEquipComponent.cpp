@@ -3,6 +3,7 @@
 #include "WeaponEquipComponent.h"
 #include "BossBase.h"
 #include "BossLauncher.h"
+#include "DA_Character.h"
 
 UWeaponEquipComponent::UWeaponEquipComponent()
 {
@@ -35,6 +36,21 @@ void UWeaponEquipComponent::SetWeapon()
 	SetFlipbook(WeaponInfo.IdleBook);
 }
 
+float UWeaponEquipComponent::GetLeechPercent()
+{
+	return WeaponInfo.fLeechPercent;
+}
+
+bool UWeaponEquipComponent::CanDeflect()
+{
+	return WeaponInfo.bCanDeflect;
+}
+
+void UWeaponEquipComponent::SetPlayer(ADA_Character & CharacterToSet)
+{
+	MyPlayer = &CharacterToSet;
+}
+
 void UWeaponEquipComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor != nullptr)
@@ -46,6 +62,13 @@ void UWeaponEquipComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, 
 			UE_LOG(LogTemp, Warning, TEXT("Hit Boss"));
 			HitBoss->ApplyDamage(WeaponInfo.fWeaponDamage);
 			bGenerateOverlapEvents = false;
+
+			if (WeaponInfo.fLeechPercent > 0 && MyPlayer != nullptr)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Leeching"));
+
+				MyPlayer->Heal(WeaponInfo.fLeechPercent * WeaponInfo.fWeaponDamage);
+			}
 		}
 
 		ABossLauncher* HitLauncher = Cast<ABossLauncher>(OtherActor);
@@ -56,6 +79,12 @@ void UWeaponEquipComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, 
 			HitLauncher->ApplyDamage(WeaponInfo.fWeaponDamage);
 			bGenerateOverlapEvents = false;
 
+			if (WeaponInfo.fLeechPercent > 0 && MyPlayer != nullptr)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Leeching"));
+
+				MyPlayer->Heal(WeaponInfo.fLeechPercent * WeaponInfo.fWeaponDamage);
+			}
 		}
 	}
 }

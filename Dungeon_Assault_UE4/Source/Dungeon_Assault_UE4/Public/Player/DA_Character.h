@@ -34,6 +34,8 @@ public:
 
 	void SetPlayerUI(UDAPlayerUI& UIToSet);
 
+	void Heal(float AmountToHeal);
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -92,6 +94,8 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraArm;
+
+	float fCurrentHealth;
 
 	bool bFirstWeaponEquiped = true;
 	bool bFirstOffhandEquiped = true;

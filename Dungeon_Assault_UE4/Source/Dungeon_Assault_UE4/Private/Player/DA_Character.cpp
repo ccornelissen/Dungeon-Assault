@@ -70,6 +70,12 @@ void ADA_Character::BeginPlay()
 		PlayerUI->fPlayerMaxHealth = fPlayerHealth;
 	}
 	
+	fCurrentHealth = fPlayerHealth;
+
+	if (CurWeapon)
+	{
+		CurWeapon->SetPlayer(*this);
+	}
 	
 	if (CurWeapon && FirstWeapon)
 	{
@@ -114,11 +120,13 @@ void ADA_Character::Tick(float DeltaTime)
 
 void ADA_Character::DATakeDamage(float DamageToTake)
 {
-	fPlayerHealth -= DamageToTake;
+	fCurrentHealth -= DamageToTake;
+
+	UE_LOG(LogTemp, Warning, TEXT("Player health = %f"), fCurrentHealth);
 
 	if (PlayerUI)
 	{
-		PlayerUI->UpdateHealthBar(fPlayerHealth);
+		PlayerUI->UpdateHealthBar(fCurrentHealth);
 	}
 
 	CheckIfDead();
@@ -126,7 +134,7 @@ void ADA_Character::DATakeDamage(float DamageToTake)
 
 void ADA_Character::CheckIfDead()
 {
-	if (fPlayerHealth <= 0)
+	if (fCurrentHealth <= 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player is dead now!"));
 	}
@@ -135,6 +143,21 @@ void ADA_Character::CheckIfDead()
 void ADA_Character::SetPlayerUI(UDAPlayerUI & UIToSet)
 {
 	PlayerUI = &UIToSet;
+}
+
+void ADA_Character::Heal(float AmountToHeal)
+{
+	fCurrentHealth += AmountToHeal;
+
+	if (fCurrentHealth > fPlayerHealth)
+	{
+		fCurrentHealth = fPlayerHealth;
+	}
+
+	if (PlayerUI)
+	{
+		PlayerUI->UpdateHealthBar(fCurrentHealth);
+	}
 }
 
 // Called to bind functionality to input
