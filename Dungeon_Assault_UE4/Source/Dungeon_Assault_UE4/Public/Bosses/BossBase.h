@@ -9,6 +9,7 @@
 class UEnemyHealthBar;
 class ABossLauncher;
 class ABossMelee;
+class AMinionSpawner;
 class USceneComponent;
 
 UCLASS()
@@ -43,6 +44,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "BossComponents")
 	TSubclassOf<ABossMelee> MeleeToSpawn = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "BossComponents")
+	TSubclassOf<AMinionSpawner> SpawnerToSpawn = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossComponents")
 	USceneComponent* TailComponent;

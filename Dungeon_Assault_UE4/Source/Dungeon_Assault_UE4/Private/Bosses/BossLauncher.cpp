@@ -62,35 +62,38 @@ void ABossLauncher::FireProjectile()
 {
 	FVector SpawnLoc = FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z);
 
-	ABossProjectile* CurProjectile = GetWorld()->SpawnActor<ABossProjectile>(Projectile, SpawnLoc, GetActorRotation());
-	
-	FRotator Rot = FRotationMatrix::MakeFromX(Player->GetActorLocation() - GetActorLocation()).Rotator();
-
-	FireFromComponent->SetRelativeRotation(Rot);
-
-	FVector VectorToSet = FVector(FireFromComponent->GetForwardVector().Y, FireFromComponent->GetForwardVector().Z, 0.0f);
-
-	CurProjectile->SetFireVector(VectorToSet);
-
-	if (Player)
+	if (Projectile)
 	{
-		CurProjectile->SetPlayer(*Player);
-		CurProjectile->MoveProjectile();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Launcher isn't get a reference to the player"));
-	}
+		ABossProjectile* CurProjectile = GetWorld()->SpawnActor<ABossProjectile>(Projectile, SpawnLoc, GetActorRotation());
 
-	if (CurProjectile->BookComponent && MainBoss)
-	{
-		CurProjectile->BookComponent->MoveIgnoreActors.Add(MainBoss);
+		FRotator Rot = FRotationMatrix::MakeFromX(Player->GetActorLocation() - GetActorLocation()).Rotator();
 
-		CurProjectile->BookComponent->MoveIgnoreActors.Add(this);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Not firing projectile"));
+		FireFromComponent->SetRelativeRotation(Rot);
+
+		FVector VectorToSet = FVector(FireFromComponent->GetForwardVector().Y, FireFromComponent->GetForwardVector().Z, 0.0f);
+
+		CurProjectile->SetFireVector(VectorToSet);
+
+		if (Player)
+		{
+			CurProjectile->SetPlayer(*Player);
+			CurProjectile->MoveProjectile();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Launcher isn't get a reference to the player"));
+		}
+
+		if (CurProjectile->BookComponent && MainBoss)
+		{
+			CurProjectile->BookComponent->MoveIgnoreActors.Add(MainBoss);
+
+			CurProjectile->BookComponent->MoveIgnoreActors.Add(this);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Not firing projectile"));
+		}
 	}
 		
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ABossLauncher::FireProjectile, fReloadTime, false);

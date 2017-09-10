@@ -12,6 +12,7 @@ class UPaperFlipbookComponent;
 class UWeaponEquipComponent;
 class UShieldEquipComponent;
 class UDAPlayerUI;
+class UPaperFlipbook;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API ADA_Character : public ACharacter
@@ -84,6 +85,16 @@ protected:
 	UWeaponEquipComponent* CurWeapon = nullptr;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
 	UShieldEquipComponent* CurShield = nullptr;
+
+
+	//PLAYER BODY COMPONENTS
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	TArray<UPaperFlipbook*> HeadBooks;
+
+	UPROPERTY(BlueprintReadWrite)
+	UPaperFlipbookComponent* HeadComp = nullptr;
+
+	void UpdateBodyComponents();
 	
 
 private:

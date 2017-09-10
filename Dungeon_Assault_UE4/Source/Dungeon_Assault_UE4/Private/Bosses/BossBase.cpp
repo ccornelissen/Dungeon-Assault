@@ -5,6 +5,7 @@
 #include "WidgetComponent.h"
 #include "BossLauncher.h"
 #include "BossMelee.h"
+#include "MinionSpawner.h"
 
 // Sets default values
 ABossBase::ABossBase()
@@ -71,6 +72,8 @@ void ABossBase::DeathCheck()
 			{
 				if (SpawnedActors[i] != nullptr)
 				{
+					GetWorld()->GetTimerManager().ClearAllTimersForObject(SpawnedActors[i]);
+
 					SpawnedActors[i]->Destroy();
 				}
 			}
@@ -82,23 +85,23 @@ void ABossBase::DeathCheck()
 
 void ABossBase::SpawnComponents()
 {
-	if (HeadComponent)
+	if (HeadComponent && LauncherToSpawn)
 	{
 		ABossLauncher* BossHead = GetWorld()->SpawnActor<ABossLauncher>(LauncherToSpawn, HeadComponent->GetComponentLocation(), HeadComponent->GetComponentRotation());
 
 		SpawnedActors.Add(BossHead);
 	}
 
-	if (TailComponent)
+	if (TailComponent && SpawnerToSpawn)
 	{
-		ABossMelee* Tail = GetWorld()->SpawnActor<ABossMelee>(MeleeToSpawn, TailComponent->GetComponentLocation(), TailComponent->GetComponentRotation());
+		AMinionSpawner* ButtSpawn = GetWorld()->SpawnActor<AMinionSpawner>(SpawnerToSpawn, TailComponent->GetComponentLocation(), TailComponent->GetComponentRotation());
 
-		SpawnedActors.Add(Tail);
+		SpawnedActors.Add(ButtSpawn);
 	}
 	
 	for (int i = 0; i < ArmComponents.Num(); i++)
 	{
-		if (ArmComponents.IsValidIndex(i))
+		if (ArmComponents.IsValidIndex(i) && MeleeToSpawn)
 		{
 			if (ArmComponents[i] != nullptr)
 			{

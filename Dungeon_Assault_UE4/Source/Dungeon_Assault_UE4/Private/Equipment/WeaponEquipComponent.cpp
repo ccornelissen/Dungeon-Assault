@@ -4,6 +4,7 @@
 #include "BossBase.h"
 #include "BossLauncher.h"
 #include "DA_Character.h"
+#include "BossMinion.h"
 
 UWeaponEquipComponent::UWeaponEquipComponent()
 {
@@ -69,6 +70,26 @@ void UWeaponEquipComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, 
 
 				MyPlayer->Heal(WeaponInfo.fLeechPercent * WeaponInfo.fWeaponDamage);
 			}
+
+			return;
+		}
+
+		ABossMinion* HitMinion = Cast<ABossMinion>(OtherActor);
+
+		if (HitMinion != nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Hit Minion"));
+			HitMinion->ApplyDamage(WeaponInfo.fWeaponDamage);
+			bGenerateOverlapEvents = false;
+
+			if (WeaponInfo.fLeechPercent > 0 && MyPlayer != nullptr)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Leeching"));
+
+				MyPlayer->Heal(WeaponInfo.fLeechPercent * WeaponInfo.fWeaponDamage);
+			}
+
+			return;
 		}
 
 		ABossLauncher* HitLauncher = Cast<ABossLauncher>(OtherActor);
@@ -85,6 +106,8 @@ void UWeaponEquipComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, 
 
 				MyPlayer->Heal(WeaponInfo.fLeechPercent * WeaponInfo.fWeaponDamage);
 			}
+
+			return;
 		}
 	}
 }

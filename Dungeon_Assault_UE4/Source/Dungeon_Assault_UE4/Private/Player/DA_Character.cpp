@@ -10,6 +10,7 @@
 #include "WeaponEquipComponent.h"
 #include "ShieldEquipComponent.h"
 #include "PaperFlipbookComponent.h"
+#include "PaperFlipbook.h"
 #include "DAPlayerUI.h"
 
 // Sets default values
@@ -185,6 +186,7 @@ void ADA_Character::MoveVertical(float Value)
 		Value = fPlayerSpeed;
 	}
 
+	UpdateBodyComponents();
 
 	AddMovementInput(GetActorForwardVector(), Value);
 }
@@ -314,6 +316,27 @@ void ADA_Character::TurnToFace()
 	FRotator NewRotation = FRotator(StartRot.Pitch, fToRotate, StartRot.Roll);
 
 	SetActorRotation(NewRotation);
+}
+
+void ADA_Character::UpdateBodyComponents()
+{
+	FRotator CurPlayerRot = GetActorRotation();
+
+	if (CurPlayerRot.Yaw < -91.0f || CurPlayerRot.Yaw > 89.0f)
+	{
+		if (HeadComp && HeadBooks[0])
+		{
+			HeadComp->SetFlipbook(HeadBooks[0]);
+		}
+	}
+	else if (CurPlayerRot.Yaw > -89.0f || CurPlayerRot.Yaw < 91.0f)
+	{
+		if (HeadComp && HeadBooks[1])
+		{
+			HeadComp->SetFlipbook(HeadBooks[1]);
+		}
+	}
+
 }
 
 
