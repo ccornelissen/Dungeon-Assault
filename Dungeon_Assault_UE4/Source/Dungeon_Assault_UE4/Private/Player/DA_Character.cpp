@@ -109,6 +109,8 @@ void ADA_Character::BeginPlay()
 			CurShield->UnBlock();
 		}
 	}
+
+	CalculateMovementSpeed();
 }
 
 
@@ -181,12 +183,9 @@ void ADA_Character::MoveVertical(float Value)
 {
 	TurnToFace();
 
-	if (Value != 0)
-	{
-		Value = fPlayerSpeed;
-	}
-
 	UpdateBodyComponents();
+
+	Value = FMath::Abs(Value);
 
 	AddMovementInput(GetActorForwardVector(), Value);
 }
@@ -295,7 +294,7 @@ void ADA_Character::SwitchWeapon()
 
 void ADA_Character::TurnToFace()
 {
-	float fToRotate;
+	float fToRotate = 0.0f;
 
 	if (PlayerInput)
 	{
@@ -336,6 +335,16 @@ void ADA_Character::UpdateBodyComponents()
 			HeadComp->SetFlipbook(HeadBooks[1]);
 		}
 	}
+
+}
+
+void ADA_Character::CalculateMovementSpeed()
+{
+	float fCalculatedSpeed = 0.0f;
+
+	fCalculatedSpeed = fPlayerSpeed * fArmorSlowDown;
+
+	GetCharacterMovement()->MaxWalkSpeed = fCalculatedSpeed;
 
 }
 

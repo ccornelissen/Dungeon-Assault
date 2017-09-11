@@ -4,20 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "DAPlayerController.generated.h"
+#include "MenuController.generated.h"
 
-class UDAPlayerUI;
-
+class UMenuWidget;
+/**
+ * 
+ */
 UCLASS()
-class DUNGEON_ASSAULT_UE4_API ADAPlayerController : public APlayerController
+class DUNGEON_ASSAULT_UE4_API AMenuController : public APlayerController
 {
 	GENERATED_BODY()
-
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UDAPlayerUI> PlayerUIToCreate = nullptr;;
+	TSubclassOf<UMenuWidget> MenuUIToCreate = nullptr;;
+	
 	
 };

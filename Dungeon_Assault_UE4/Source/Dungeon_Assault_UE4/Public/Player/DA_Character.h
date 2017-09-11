@@ -70,7 +70,10 @@ protected:
 	void TurnToFace();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player Variables")
-	float fPlayerSpeed = 5.0f;
+	float fPlayerSpeed = 600.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player Variables")
+	float fArmorSlowDown = 0.95f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Shield")
 	USceneComponent* ShieldIdlePoint = nullptr;
@@ -95,6 +98,8 @@ protected:
 	UPaperFlipbookComponent* HeadComp = nullptr;
 
 	void UpdateBodyComponents();
+
+	void CalculateMovementSpeed();
 	
 
 private:
