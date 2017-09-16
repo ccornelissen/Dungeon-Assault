@@ -7,6 +7,7 @@
 #include "MenuWidget.generated.h"
 
 class UTextBlock;
+class UImage;
 
 /**
  * 
@@ -25,6 +26,21 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Button")
 	void SetUnhoveredColor(UTextBlock* TextToSet);
+
+	UFUNCTION(BlueprintCallable, Category = "Button")
+	void ChangeEquipment(UImage* ImageToSet, TArray<UImage*> ImageArray, int i);
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<UImage*> ArmorImages;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<UImage*> HelmetImages;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<UImage*> WeaponImages;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<UImage*> OffhandImages;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	FLinearColor UnhoveredColor;
