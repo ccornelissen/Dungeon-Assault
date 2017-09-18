@@ -8,6 +8,7 @@
 
 class UTextBlock;
 class UImage;
+class UPaperFlipbookComponent;
 
 /**
  * 
@@ -28,24 +29,42 @@ protected:
 	void SetUnhoveredColor(UTextBlock* TextToSet);
 
 	UFUNCTION(BlueprintCallable, Category = "Button")
-	void ChangeEquipment(UImage* ImageToSet, TArray<UImage*> ImageArray, int i);
-
-	UPROPERTY(BlueprintReadWrite)
-	TArray<UImage*> ArmorImages;
-
-	UPROPERTY(BlueprintReadWrite)
-	TArray<UImage*> HelmetImages;
-
-	UPROPERTY(BlueprintReadWrite)
-	TArray<UImage*> WeaponImages;
-
-	UPROPERTY(BlueprintReadWrite)
-	TArray<UImage*> OffhandImages;
+	int32 ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> EquipmentArray, int32 i);
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	FLinearColor UnhoveredColor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	FLinearColor HoveredColor;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
+	int32 iHelmets;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> HelmetArray;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
+	int32 iArmor;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> ArmorArray;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
+	int32 iMainWeapon;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> WeaponArray;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
+	int32 iMainOffhand;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> OffhandArray;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
+	int32 iSecondWeapon;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
+	int32 iSecondOffhand;
 	
 };

@@ -1,0 +1,44 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "PaperFlipbookComponent.h"
+#include "ArmorEquipComponent.generated.h"
+
+/**
+ * 
+ */
+USTRUCT(BlueprintType)
+struct FArmorVariables
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float fArmorWeight = 20.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UPaperFlipbook* ForwardBook;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UPaperFlipbook* BackBook;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	bool bAllowsDash = false;
+};
+
+
+UCLASS()
+class DUNGEON_ASSAULT_UE4_API UArmorEquipComponent : public UPaperFlipbookComponent
+{
+	GENERATED_BODY()
+	
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	UTexture2D* MyUITexture = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Armor Info")
+		FArmorVariables ArmorInfo;
+	
+	
+};

@@ -45,6 +45,8 @@ class DUNGEON_ASSAULT_UE4_API UShieldEquipComponent : public UPaperFlipbookCompo
 	UShieldEquipComponent();
 
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	UTexture2D* MyUITexture = nullptr;
 
 	void SetShield();
 

@@ -3,6 +3,10 @@
 #include "MenuWidget.h"
 #include "TextBlock.h"
 #include "Image.h"
+#include "WeaponEquipComponent.h"
+#include "ShieldEquipComponent.h"
+#include "ArmorEquipComponent.h"
+#include "HelmetEquipComponent.h"
 
 void UMenuWidget::NativeConstruct()
 {
@@ -19,24 +23,64 @@ void UMenuWidget::SetUnhoveredColor(UTextBlock* TextToSet)
 	TextToSet->SetColorAndOpacity(UnhoveredColor);
 }
 
-void UMenuWidget::ChangeEquipment(UImage* ImageToSet, TArray<UImage*> ImageArray, int i)
+int32 UMenuWidget::ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> EquipmentArray, int32 i)
 {
-	if (ImageArray.Num() > 0)
+	if (EquipmentArray.Num() > 0)
 	{
-		if (i > ImageArray.Num() - 1)
+		if (i > EquipmentArray.Num() - 1)
 		{
 			i = 0;
 		}
 		else if (i < 0)
 		{
-			i = ImageArray.Num() - 1;
+			i = EquipmentArray.Num() - 1;
 		}
 
-		if (ImageArray.IsValidIndex(i))
+		if (EquipmentArray.IsValidIndex(i))
 		{
-			ImageToSet = ImageArray[i];
+			if (EquipmentArray[i]->IsChildOf(UWeaponEquipComponent::StaticClass()))
+			{
+				UTexture2D* TextureToSet = EquipmentArray[i]->GetDefaultObject<UWeaponEquipComponent>()->MyUITexture;
+
+				if (TextureToSet)
+				{
+					ImageToSet->SetBrushFromTexture(TextureToSet);
+				}
+			}
+
+			if (EquipmentArray[i]->IsChildOf(UShieldEquipComponent::StaticClass()))
+			{
+				UTexture2D* TextureToSet = EquipmentArray[i]->GetDefaultObject<UShieldEquipComponent>()->MyUITexture;
+
+				if (TextureToSet)
+				{
+					ImageToSet->SetBrushFromTexture(TextureToSet);
+				}
+			}
+
+			if (EquipmentArray[i]->IsChildOf(UHelmetEquipComponent::StaticClass()))
+			{
+				UTexture2D* TextureToSet = EquipmentArray[i]->GetDefaultObject<UHelmetEquipComponent>()->MyUITexture;
+
+				if (TextureToSet)
+				{
+					ImageToSet->SetBrushFromTexture(TextureToSet);
+				}
+			}
+
+			if (EquipmentArray[i]->IsChildOf(UArmorEquipComponent::StaticClass()))
+			{
+				UTexture2D* TextureToSet = EquipmentArray[i]->GetDefaultObject<UArmorEquipComponent>()->MyUITexture;
+
+				if (TextureToSet)
+				{
+					ImageToSet->SetBrushFromTexture(TextureToSet);
+				}
+			}
 		}
 	}
+
+	return i;
 }
 
 

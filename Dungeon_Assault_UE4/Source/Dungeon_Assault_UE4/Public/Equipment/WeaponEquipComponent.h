@@ -52,6 +52,9 @@ public:
 
 	UWeaponEquipComponent();
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	UTexture2D* MyUITexture = nullptr;
+
 	void Attack();
 
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponInfo")
