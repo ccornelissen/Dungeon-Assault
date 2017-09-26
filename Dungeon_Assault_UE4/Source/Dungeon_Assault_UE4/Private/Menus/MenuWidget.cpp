@@ -83,5 +83,33 @@ int32 UMenuWidget::ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaper
 	return i;
 }
 
+void UMenuWidget::ChangeResolution(float fRes)
+{
+	if (fRes > 0.1f)
+	{
+		float fX = (1920 * fRes)/1920;
+		float fY = (1080 * fRes)/1080;
+
+		FString ResString;
+
+		
+		(fX > fY) ? ResString = FString::SanitizeFloat(fX * 100) : ResString = FString::SanitizeFloat(fY * 100);
+
+		sResolution = FString(TEXT("r.ScreenPercentage "));
+
+		sResolution += ResString;
+	}
+}
+
+void UMenuWidget::ApplyOptions()
+{
+	APlayerController* PlayerControl = GetWorld()->GetFirstPlayerController();
+
+	if (PlayerControl)
+	{
+		PlayerControl->ConsoleCommand(*sResolution, true);
+	}
+}
+
 
 

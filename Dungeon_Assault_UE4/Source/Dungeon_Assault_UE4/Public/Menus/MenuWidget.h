@@ -31,6 +31,14 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Button")
 	int32 ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> EquipmentArray, int32 i);
 
+	UFUNCTION(BlueprintCallable, Category = "Options")
+	void ChangeResolution(float fRes);
+
+	FString sResolution;
+
+	UFUNCTION(BlueprintCallable, Category = "Options")
+	void ApplyOptions();
+
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	FLinearColor UnhoveredColor;
 
