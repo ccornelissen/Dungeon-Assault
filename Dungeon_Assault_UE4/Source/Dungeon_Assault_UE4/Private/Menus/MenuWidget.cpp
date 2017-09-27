@@ -111,5 +111,21 @@ void UMenuWidget::ApplyOptions()
 	}
 }
 
+void UMenuWidget::ChangeMusicMultiplier(float fMulti)
+{
+	//Save the float to the player
+	float fTemp = fMulti;
+
+	UE_LOG(LogTemp, Warning, TEXT("%f"), fTemp);
+}
+
+void UMenuWidget::ChangeSFXMultiplier(float fMulti)
+{
+	//Save the float to the player
+	float fTemp = fMulti;
+
+	UE_LOG(LogTemp, Warning, TEXT("%f"), fTemp);
+}
+
 
 

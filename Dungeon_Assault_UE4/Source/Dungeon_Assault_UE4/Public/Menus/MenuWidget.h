@@ -39,6 +39,12 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Options")
 	void ApplyOptions();
 
+	UFUNCTION(BlueprintCallable, Category = "Options")
+	void ChangeSFXMultiplier(float fMulti);
+
+	UFUNCTION(BlueprintCallable, Category = "Options")
+	void ChangeMusicMultiplier(float fMulti);
+
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	FLinearColor UnhoveredColor;
 
