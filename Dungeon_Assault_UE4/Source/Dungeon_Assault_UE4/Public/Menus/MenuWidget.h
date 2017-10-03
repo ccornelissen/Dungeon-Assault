@@ -13,6 +13,23 @@ class UPaperFlipbookComponent;
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class EDynamicResState : uint8
+{
+	DS_Enabled,
+	DS_Disabled,
+	DS_Max
+};
+
+UENUM(BlueprintType)
+enum class EControlState : uint8
+{
+	CS_Joystick,
+	CS_Touch,
+	CS_Max
+};
+
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API UMenuWidget : public UUserWidget
 {
@@ -22,14 +39,25 @@ class DUNGEON_ASSAULT_UE4_API UMenuWidget : public UUserWidget
 
 
 protected:
+	///////////////////////////
+	//GENERAL//
+	///////////////////////////
+
 	UFUNCTION(BlueprintCallable, Category = "Button")
 	void SetHoveredColor(UTextBlock* TextToSet);
 
 	UFUNCTION(BlueprintCallable, Category = "Button")
 	void SetUnhoveredColor(UTextBlock* TextToSet);
 
-	UFUNCTION(BlueprintCallable, Category = "Button")
-	int32 ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> EquipmentArray, int32 i);
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	FLinearColor UnhoveredColor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	FLinearColor HoveredColor;
+
+	///////////////////////////
+	//Options//
+	///////////////////////////
 
 	UFUNCTION(BlueprintCallable, Category = "Options")
 	void ChangeResolution(float fRes);
@@ -45,11 +73,28 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Options")
 	void ChangeMusicMultiplier(float fMulti);
 
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	FLinearColor UnhoveredColor;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Options")
+	FLinearColor EnabledColor;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Options")
+	FLinearColor DisabledColor;
 
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	FLinearColor HoveredColor;
+	UFUNCTION(BlueprintCallable, Category = "Options")
+	void SetDynamicResolution(EDynamicResState StateToSet);
+
+	UFUNCTION(BlueprintCallable, Category = "Options")
+	void SetControlState(EControlState StateToSet);
+
+	EDynamicResState CurDynamicResState = EDynamicResState::DS_Enabled;
+
+	EControlState CurControlState = EControlState::CS_Joystick;
+
+	///////////////////////////
+	//Equipment Screen//
+	///////////////////////////
+
+	UFUNCTION(BlueprintCallable, Category = "Options")
+	int32 ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> EquipmentArray, int32 i);
 
 	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
 	int32 iHelmets;
@@ -81,4 +126,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
 	int32 iSecondOffhand;
 	
+	
+
 };

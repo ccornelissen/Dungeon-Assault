@@ -15,12 +15,19 @@ void UMenuWidget::NativeConstruct()
 
 void UMenuWidget::SetHoveredColor(UTextBlock* TextToSet)
 {
-	TextToSet->SetColorAndOpacity(HoveredColor);
+	if (TextToSet)
+	{
+		TextToSet->SetColorAndOpacity(HoveredColor);
+	}
+	
 }
 
 void UMenuWidget::SetUnhoveredColor(UTextBlock* TextToSet)
 {
-	TextToSet->SetColorAndOpacity(UnhoveredColor);
+	if (TextToSet)
+	{
+		TextToSet->SetColorAndOpacity(UnhoveredColor);
+	}
 }
 
 int32 UMenuWidget::ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> EquipmentArray, int32 i)
@@ -117,6 +124,16 @@ void UMenuWidget::ChangeMusicMultiplier(float fMulti)
 	float fTemp = fMulti;
 
 	UE_LOG(LogTemp, Warning, TEXT("%f"), fTemp);
+}
+
+void UMenuWidget::SetDynamicResolution(EDynamicResState StateToSet)
+{
+	CurDynamicResState = StateToSet;
+}
+
+void UMenuWidget::SetControlState(EControlState StateToSet)
+{
+	CurControlState = StateToSet;
 }
 
 void UMenuWidget::ChangeSFXMultiplier(float fMulti)
