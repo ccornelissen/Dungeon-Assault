@@ -125,6 +125,15 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
 	int32 iSecondOffhand;
+
+	///////////////////////////
+	//Store//
+	///////////////////////////
+
+	UFUNCTION(BlueprintCallable, Category = "Store")
+	void BuyCoins(int CoinsPurchased);
+
+	int iPlayerFunds = 0;
 	
 	
 

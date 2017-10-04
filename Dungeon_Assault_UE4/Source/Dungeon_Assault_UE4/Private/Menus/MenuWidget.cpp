@@ -13,6 +13,10 @@ void UMenuWidget::NativeConstruct()
 	Super::NativeConstruct();
 }
 
+///////////////////////////
+//GENERAL//
+///////////////////////////
+
 void UMenuWidget::SetHoveredColor(UTextBlock* TextToSet)
 {
 	if (TextToSet)
@@ -29,6 +33,69 @@ void UMenuWidget::SetUnhoveredColor(UTextBlock* TextToSet)
 		TextToSet->SetColorAndOpacity(UnhoveredColor);
 	}
 }
+
+///////////////////////////
+//Options//
+///////////////////////////
+
+
+void UMenuWidget::ChangeResolution(float fRes)
+{
+	if (fRes > 0.1f)
+	{
+		float fX = (1920 * fRes)/1920;
+		float fY = (1080 * fRes)/1080;
+
+		FString ResString;
+
+		
+		(fX > fY) ? ResString = FString::SanitizeFloat(fX * 100) : ResString = FString::SanitizeFloat(fY * 100);
+
+		sResolution = FString(TEXT("r.ScreenPercentage "));
+
+		sResolution += ResString;
+	}
+}
+
+void UMenuWidget::ChangeMusicMultiplier(float fMulti)
+{
+	//Save the float to the player
+	float fTemp = fMulti;
+
+	UE_LOG(LogTemp, Warning, TEXT("%f"), fTemp);
+}
+
+void UMenuWidget::ChangeSFXMultiplier(float fMulti)
+{
+	//Save the float to the player
+	float fTemp = fMulti;
+
+	UE_LOG(LogTemp, Warning, TEXT("%f"), fTemp);
+}
+
+void UMenuWidget::SetDynamicResolution(EDynamicResState StateToSet)
+{
+	CurDynamicResState = StateToSet;
+}
+
+void UMenuWidget::SetControlState(EControlState StateToSet)
+{
+	CurControlState = StateToSet;
+}
+
+void UMenuWidget::ApplyOptions()
+{
+	APlayerController* PlayerControl = GetWorld()->GetFirstPlayerController();
+
+	if (PlayerControl)
+	{
+		PlayerControl->ConsoleCommand(*sResolution, true);
+	}
+}
+
+///////////////////////////
+//Equipment Screen//
+///////////////////////////
 
 int32 UMenuWidget::ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> EquipmentArray, int32 i)
 {
@@ -90,59 +157,24 @@ int32 UMenuWidget::ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaper
 	return i;
 }
 
-void UMenuWidget::ChangeResolution(float fRes)
+///////////////////////////
+//Store//
+///////////////////////////
+
+void UMenuWidget::BuyCoins(int CoinsPurchased)
 {
-	if (fRes > 0.1f)
+	//Check if player has required funds/follow purchase flow
+	bool bSufficentFunds = true;
+
+	if (bSufficentFunds == true)
 	{
-		float fX = (1920 * fRes)/1920;
-		float fY = (1080 * fRes)/1080;
+		iPlayerFunds += CoinsPurchased;
 
-		FString ResString;
-
-		
-		(fX > fY) ? ResString = FString::SanitizeFloat(fX * 100) : ResString = FString::SanitizeFloat(fY * 100);
-
-		sResolution = FString(TEXT("r.ScreenPercentage "));
-
-		sResolution += ResString;
+		UE_LOG(LogTemp, Warning, TEXT("Players Current Funds: %d"), iPlayerFunds);
 	}
 }
 
-void UMenuWidget::ApplyOptions()
-{
-	APlayerController* PlayerControl = GetWorld()->GetFirstPlayerController();
 
-	if (PlayerControl)
-	{
-		PlayerControl->ConsoleCommand(*sResolution, true);
-	}
-}
-
-void UMenuWidget::ChangeMusicMultiplier(float fMulti)
-{
-	//Save the float to the player
-	float fTemp = fMulti;
-
-	UE_LOG(LogTemp, Warning, TEXT("%f"), fTemp);
-}
-
-void UMenuWidget::SetDynamicResolution(EDynamicResState StateToSet)
-{
-	CurDynamicResState = StateToSet;
-}
-
-void UMenuWidget::SetControlState(EControlState StateToSet)
-{
-	CurControlState = StateToSet;
-}
-
-void UMenuWidget::ChangeSFXMultiplier(float fMulti)
-{
-	//Save the float to the player
-	float fTemp = fMulti;
-
-	UE_LOG(LogTemp, Warning, TEXT("%f"), fTemp);
-}
 
 
 
