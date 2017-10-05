@@ -8,6 +8,7 @@
 
 class UTextBlock;
 class UImage;
+class UButton;
 class UPaperFlipbookComponent;
 
 /**
@@ -134,7 +135,27 @@ protected:
 	void BuyCoins(int CoinsPurchased);
 
 	int iPlayerFunds = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Store")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> StoreWeaponArray;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Store")
+	int32 iStoreWeapon;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Store")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> StoreArmorArray;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Store")
+	int32 iStoreArmor;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Store")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> StoreOffhandArray;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Store")
+	int32 iStoreOffhand;
 	
-	
+	UFUNCTION(BlueprintCallable, Category = "Store")
+	void BuyAdFree(UButton* AdFreeButton, UImage* AdFreeImage);
+
 
 };

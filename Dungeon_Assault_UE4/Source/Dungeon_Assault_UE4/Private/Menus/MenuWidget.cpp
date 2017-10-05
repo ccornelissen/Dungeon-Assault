@@ -3,6 +3,7 @@
 #include "MenuWidget.h"
 #include "TextBlock.h"
 #include "Image.h"
+#include "Button.h"
 #include "WeaponEquipComponent.h"
 #include "ShieldEquipComponent.h"
 #include "ArmorEquipComponent.h"
@@ -172,6 +173,31 @@ void UMenuWidget::BuyCoins(int CoinsPurchased)
 
 		UE_LOG(LogTemp, Warning, TEXT("Players Current Funds: %d"), iPlayerFunds);
 	}
+}
+
+void UMenuWidget::BuyAdFree(UButton* AdFreeButton, UImage* AdFreeImage)
+{
+	//Check if player has required funds/follow purchase flow
+	bool bSufficentFunds = true;
+
+	if (bSufficentFunds == true)
+	{
+		//Set player variable bAdfree to true
+		UE_LOG(LogTemp, Warning, TEXT("This player now owns the game!"));
+
+		if (AdFreeButton)
+		{
+			AdFreeButton->SetVisibility(ESlateVisibility::Hidden);
+			AdFreeButton->SetIsEnabled(false);
+		}
+
+		if (AdFreeImage)
+		{
+			AdFreeImage->SetIsEnabled(true);
+			AdFreeImage->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+
 }
 
 
