@@ -8,10 +8,18 @@
 #include "ShieldEquipComponent.h"
 #include "ArmorEquipComponent.h"
 #include "HelmetEquipComponent.h"
+#include "DASaveGame.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine.h"
 
 void UMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	if (SaveGameBP)
+	{
+		SaveGameInstance = Cast<UDASaveGame>(UGameplayStatics::CreateSaveGameObjectFromBlueprint(SaveGameBP->GetDefaultObject<UBlueprint>()));
+	}
 }
 
 ///////////////////////////

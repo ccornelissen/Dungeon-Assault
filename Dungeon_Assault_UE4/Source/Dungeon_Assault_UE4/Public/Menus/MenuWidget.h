@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DAEnums.h"
 #include "Blueprint/UserWidget.h"
 #include "MenuWidget.generated.h"
 
@@ -10,26 +11,8 @@ class UTextBlock;
 class UImage;
 class UButton;
 class UPaperFlipbookComponent;
-
-/**
- * 
- */
-
-UENUM(BlueprintType)
-enum class EDynamicResState : uint8
-{
-	DS_Enabled,
-	DS_Disabled,
-	DS_Max
-};
-
-UENUM(BlueprintType)
-enum class EControlState : uint8
-{
-	CS_Joystick,
-	CS_Touch,
-	CS_Max
-};
+class UDASaveGame;
+class UBlueprint;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API UMenuWidget : public UUserWidget
@@ -43,6 +26,12 @@ protected:
 	///////////////////////////
 	//GENERAL//
 	///////////////////////////
+
+	UPROPERTY(EditDefaultsOnly, Category = "Save")
+	TSubclassOf<UBlueprint> SaveGameBP;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Save")
+	UDASaveGame* SaveGameInstance;
 
 	UFUNCTION(BlueprintCallable, Category = "Button")
 	void SetHoveredColor(UTextBlock* TextToSet);
@@ -156,6 +145,8 @@ protected:
 	
 	UFUNCTION(BlueprintCallable, Category = "Store")
 	void BuyAdFree(UButton* AdFreeButton, UImage* AdFreeImage);
+
+	EAdState CurrentAdState = EAdState::AS_Free;
 
 
 };
