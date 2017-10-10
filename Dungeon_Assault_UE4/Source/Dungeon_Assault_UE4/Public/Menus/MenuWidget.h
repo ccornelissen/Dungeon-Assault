@@ -10,9 +10,9 @@
 class UTextBlock;
 class UImage;
 class UButton;
+class USlider;
 class UPaperFlipbookComponent;
 class UDASaveGame;
-class UBlueprint;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API UMenuWidget : public UUserWidget
@@ -27,11 +27,14 @@ protected:
 	//GENERAL//
 	///////////////////////////
 
-	UPROPERTY(EditDefaultsOnly, Category = "Save")
-	TSubclassOf<UBlueprint> SaveGameBP;
+	UFUNCTION(BlueprintCallable, Category = "Save")
+	void SetupSaveGame(UDASaveGame* GameSaveInstance);
 
 	UPROPERTY(BlueprintReadWrite, Category = "Save")
 	UDASaveGame* SaveGameInstance;
+
+	UFUNCTION(BlueprintCallable, Category = "Save")
+	void SaveGame();
 
 	UFUNCTION(BlueprintCallable, Category = "Button")
 	void SetHoveredColor(UTextBlock* TextToSet);
@@ -47,6 +50,12 @@ protected:
 
 	///////////////////////////
 	//Options//
+	///////////////////////////
+
+	//Set Up//
+	UFUNCTION(BlueprintCallable, Category = "Options")
+	void OptionScreenSetup(USlider* ResSlide, USlider* MusicSlide, USlider* SFXSlide, UButton* EnableDynRes, UButton* DisableDynRes, UButton* StickControl, UButton* TouchControl);
+
 	///////////////////////////
 
 	UFUNCTION(BlueprintCallable, Category = "Options")
@@ -75,40 +84,25 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Options")
 	void SetControlState(EControlState StateToSet);
 
-	EDynamicResState CurDynamicResState = EDynamicResState::DS_Enabled;
-
-	EControlState CurControlState = EControlState::CS_Joystick;
-
 	///////////////////////////
 	//Equipment Screen//
 	///////////////////////////
 
-	UFUNCTION(BlueprintCallable, Category = "Options")
-	int32 ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> EquipmentArray, int32 i);
+	//Set Up//
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	void EquipmentScreenSetup(UImage* MainWep, UImage* MainOff, UImage* HelmImg, UImage* ArmorImg, UImage* SecondWep, UImage* SecondOff);
 
 	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
 	int32 iHelmets;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	TArray<TSubclassOf<UPaperFlipbookComponent>> HelmetArray;
-
 	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
 	int32 iArmor;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	TArray<TSubclassOf<UPaperFlipbookComponent>> ArmorArray;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
 	int32 iMainWeapon;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	TArray<TSubclassOf<UPaperFlipbookComponent>> WeaponArray;
-
 	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
 	int32 iMainOffhand;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	TArray<TSubclassOf<UPaperFlipbookComponent>> OffhandArray;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
 	int32 iSecondWeapon;
@@ -116,9 +110,32 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Equipment")
 	int32 iSecondOffhand;
 
+	///////////////
+
+	UFUNCTION(BlueprintCallable, Category = "Options")
+	int32 ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> EquipmentArray, int32 i);
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> HelmetArray;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> ArmorArray;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> WeaponArray;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> OffhandArray;
+
 	///////////////////////////
 	//Store//
 	///////////////////////////
+
+	//Set Up//
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	void StoreSetup(UImage* StoreWeapon, UImage* StoreArmor, UImage* StoreOffhand, UImage* StoreHelmet, UButton* AdFreeButton, UImage* AdFreeImage);
+
+	///////////////////////
 
 	UFUNCTION(BlueprintCallable, Category = "Store")
 	void BuyCoins(int CoinsPurchased);
@@ -142,6 +159,12 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Store")
 	int32 iStoreOffhand;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Store")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> StoreHelmetArray;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Store")
+	int32 iStoreHelmet;
 	
 	UFUNCTION(BlueprintCallable, Category = "Store")
 	void BuyAdFree(UButton* AdFreeButton, UImage* AdFreeImage);

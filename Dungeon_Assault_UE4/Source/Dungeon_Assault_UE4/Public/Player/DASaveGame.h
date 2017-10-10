@@ -18,6 +18,23 @@ struct FMenuSaveData
 	GENERATED_BODY()
 
 	//////EQUIPMENT SCREEN/////////
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	int32 iSavedMainWep = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	int32 iSavedMainOffhand = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	int32 iSavedArmor = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	int32 iSavedHelmet = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	int32 iSavedSecondaryWeapon = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	int32 iSavedSecondaryOffhand = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
 	TArray<TSubclassOf<UPaperFlipbookComponent>> OwnedHelmets;
@@ -46,6 +63,14 @@ struct FMenuSaveData
 	//////STORE/////////
 	int iPlayerCoins = 0;
 
+	int iLastStoreWeapon = 0;
+
+	int iLastStoreOffhand = 0;
+
+	int iLastStoreArmor = 0;
+
+	int iLastStoreHelmet = 0;
+
 	EAdState SavedAdState = EAdState::AS_Free;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
@@ -56,6 +81,9 @@ struct FMenuSaveData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
 	TArray<TSubclassOf<UPaperFlipbookComponent>> StoreOffhands;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	TArray<TSubclassOf<UPaperFlipbookComponent>> StoreHelmets;
 };
 
 USTRUCT(BlueprintType)
@@ -78,6 +106,9 @@ class DUNGEON_ASSAULT_UE4_API UDASaveGame : public USaveGame
 {
 	GENERATED_BODY()
 
+	UDASaveGame();
+	
+public:
 	UPROPERTY(VisibleAnywhere, Category = "SetUp")
 	FString PlayerName;
 
@@ -87,9 +118,6 @@ class DUNGEON_ASSAULT_UE4_API UDASaveGame : public USaveGame
 	UPROPERTY(VisibleAnywhere, Category = "SetUp")
 	uint32 UserIndex;
 
-	UDASaveGame();
-	
-public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Save Data")
 	FGameplaySaveData GameplaySaveData;
 
