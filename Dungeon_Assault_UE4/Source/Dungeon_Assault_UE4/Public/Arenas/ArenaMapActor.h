@@ -14,6 +14,7 @@ class ABossBase;
 class ABossLauncher;
 class ADA_Character;
 class AArenaEndDoor;
+class UDASaveGame;
 
 USTRUCT()
 struct FTileSpawnData
@@ -42,9 +43,14 @@ public:
 
 	void SpawnActors();
 
+	UFUNCTION(BlueprintCallable, Category = "Save")
+	void SetupSaveGame(UDASaveGame* GameSaveInstance);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UDASaveGame* SaveGameInstance;
 	
 	//Spawning Variables
 	UPROPERTY(EditDefaultsOnly, Category = "Main Bosses")
@@ -112,6 +118,8 @@ protected:
 private:
 	UPaperTileMapComponent* TileMapComp = nullptr;
 	UPaperTileMap* TileMap = nullptr;
+
+	ABossBase* SpawnedBase = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
 	UBoxComponent* BoxCollision = nullptr;

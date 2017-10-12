@@ -27,6 +27,7 @@ class DUNGEON_ASSAULT_UE4_API AArenaEndDoor : public APaperFlipbookActor
 	AArenaEndDoor();
 	
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Door Type")
 	EDoorState CurrentState = EDoorState::DS_ArenaEnd;
 
 	void ActivateDoor();

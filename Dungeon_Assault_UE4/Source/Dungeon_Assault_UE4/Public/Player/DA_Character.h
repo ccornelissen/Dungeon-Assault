@@ -13,6 +13,7 @@ class UWeaponEquipComponent;
 class UShieldEquipComponent;
 class UDAPlayerUI;
 class UPaperFlipbook;
+class UDASaveGame;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API ADA_Character : public ACharacter
@@ -32,6 +33,8 @@ public:
 	void DATakeDamage(float DamageToTake);
 
 	void CheckIfDead();
+
+	void SetSaveInstance(UDASaveGame& SaveGame);
 
 	void SetPlayerUI(UDAPlayerUI& UIToSet);
 
@@ -109,6 +112,8 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraArm;
+
+	UDASaveGame* SaveGameInstance;
 
 	float fCurrentHealth;
 

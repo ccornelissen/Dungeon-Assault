@@ -12,6 +12,7 @@ class ABossMelee;
 class AMinionSpawner;
 class USceneComponent;
 class AArenaEndDoor;
+class UDASaveGame;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API ABossBase : public ACharacter
@@ -27,6 +28,8 @@ public:
 	void ApplyDamage(float Damage);
 
 	void SetEndDoor(AArenaEndDoor& DoorRef);
+
+	void SetSaveInstance(UDASaveGame& SaveGame);
 
 protected:
 	// Called when the game starts or when spawned
@@ -65,6 +68,8 @@ private:
 	AArenaEndDoor* EndDoor = nullptr;
 
 	TArray<AActor*> SpawnedActors;
+
+	UDASaveGame* SaveGameInstance;
 
 	void SpawnComponents();
 };

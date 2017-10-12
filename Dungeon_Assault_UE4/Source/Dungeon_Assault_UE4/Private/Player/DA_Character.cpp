@@ -11,6 +11,7 @@
 #include "ShieldEquipComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperFlipbook.h"
+#include "Dungeon_Assault_UE4.h"
 #include "DAPlayerUI.h"
 
 // Sets default values
@@ -146,6 +147,11 @@ void ADA_Character::CheckIfDead()
 void ADA_Character::SetPlayerUI(UDAPlayerUI & UIToSet)
 {
 	PlayerUI = &UIToSet;
+}
+
+void ADA_Character::SetSaveInstance(UDASaveGame & SaveGame)
+{
+	SaveGameInstance = &SaveGame;
 }
 
 void ADA_Character::Heal(float AmountToHeal)

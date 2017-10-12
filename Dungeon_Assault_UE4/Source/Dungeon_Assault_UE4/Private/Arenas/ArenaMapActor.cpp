@@ -9,6 +9,7 @@
 #include "BossBase.h"
 #include "BossLauncher.h"
 #include "DA_Character.h"
+#include "Dungeon_Assault_UE4.h"
 #include "ArenaEndDoor.h"
 #include "EngineUtils.h"
 
@@ -19,6 +20,20 @@ AArenaMapActor::AArenaMapActor()
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	BoxCollision->SetupAttachment(RootComponent);
 	BoxCollision->bGenerateOverlapEvents = false;
+}
+
+void AArenaMapActor::SetupSaveGame(UDASaveGame * GameSaveInstance)
+{
+	if (GameSaveInstance)
+	{
+		SaveGameInstance = GameSaveInstance;
+
+		SaveGameInstance = Cast<UDASaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Save Game Instance"));
+	}
 }
 
 void AArenaMapActor::GenerateMap()
@@ -147,11 +162,11 @@ void AArenaMapActor::SpawnActors()
 		FVector NewSpawnLoc = FVector(BossSpawnData.SpawnLocation.X, BossSpawnData.SpawnLocation.Y, BossSpawnData.fVerticalModifier);
 		FRotator NewSpawnRot = FRotator(0,-180.0f,0);
 
-		ABossBase* CurBase = GetWorld()->SpawnActor<ABossBase>(BossBases[0], NewSpawnLoc, NewSpawnRot);
+		SpawnedBase = GetWorld()->SpawnActor<ABossBase>(BossBases[0], NewSpawnLoc, NewSpawnRot);
 
 		if (DoorToSpawn)
 		{
-			CurBase->SetEndDoor(*DoorToSpawn);
+			SpawnedBase->SetEndDoor(*DoorToSpawn);
 		}
 		
 	}
@@ -177,6 +192,8 @@ void AArenaMapActor::SpawnActors()
 
 void AArenaMapActor::BeginPlay()
 {
+	Super::BeginPlay();
+
 	for (TActorIterator<ADA_Character> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
 		PlayerReference = *ActorItr;
@@ -185,6 +202,24 @@ void AArenaMapActor::BeginPlay()
 	GenerateMap();
 
 	SpawnActors();
+
+	if (SpawnedBase)
+	{
+		SpawnedBase->SetSaveInstance(*SaveGameInstance);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No base reference"));
+	}
+
+	if (PlayerReference)
+	{
+		PlayerReference->SetSaveInstance(*SaveGameInstance);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No player reference"));
+	}
 }
 
 void AArenaMapActor::SetBossSpawnData(FVector SpawnVec)

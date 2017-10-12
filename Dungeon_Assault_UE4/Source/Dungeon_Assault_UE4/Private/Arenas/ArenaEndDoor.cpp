@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ArenaEndDoor.h"
+#include "Dungeon_Assault_UE4.h"
 #include "DA_Character.h"
 #include "PaperFlipbookComponent.h"
 
@@ -29,12 +30,11 @@ void AArenaEndDoor::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor 
 	{
 		if (CurrentState == EDoorState::DS_ArenaEnd)
 		{
-			//Load the safe room
-			UE_LOG(LogTemp, Warning, TEXT("Loading the next room!"));
+			UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("SafeArena")));
 		}
 		else if (CurrentState == EDoorState::DS_SafeArena)
 		{
-			//Load the next arena
+			UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("Test_Arena")));
 		}
 	}
 }

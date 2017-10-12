@@ -6,6 +6,7 @@
 #include "BossLauncher.h"
 #include "BossMelee.h"
 #include "ArenaEndDoor.h"
+#include "Dungeon_Assault_UE4.h"
 #include "MinionSpawner.h"
 
 // Sets default values
@@ -39,6 +40,8 @@ void ABossBase::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Lacking the widget comp"));
 	}
+	
+
 
 	SetComponents();
 	SpawnComponents();
@@ -68,6 +71,11 @@ void ABossBase::SetEndDoor(AArenaEndDoor & DoorRef)
 	EndDoor = &DoorRef;
 }
 
+void ABossBase::SetSaveInstance(UDASaveGame & SaveGame)
+{
+	SaveGameInstance = &SaveGame;
+}
+
 void ABossBase::DeathCheck()
 {
 	if (fBossHealth <= 0)
@@ -86,6 +94,19 @@ void ABossBase::DeathCheck()
 		}
 
 		EndDoor->ActivateDoor();
+
+		if (SaveGameInstance)
+		{
+			SaveGameInstance->GameplaySaveData.iLastWaveCompleted += 1;
+
+			UE_LOG(LogTemp, Warning, TEXT("%d"), SaveGameInstance->GameplaySaveData.iLastWaveCompleted);
+
+			UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No save game instance"));
+		}
 
 		Destroy();
 	}
