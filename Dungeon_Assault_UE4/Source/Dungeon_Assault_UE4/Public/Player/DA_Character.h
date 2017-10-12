@@ -89,7 +89,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
 	UShieldEquipComponent* CurShield = nullptr;
 
-
 	//PLAYER BODY COMPONENTS
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	TArray<UPaperFlipbook*> HeadBooks;

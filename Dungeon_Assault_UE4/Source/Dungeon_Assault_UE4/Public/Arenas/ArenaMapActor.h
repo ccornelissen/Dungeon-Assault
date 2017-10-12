@@ -13,6 +13,7 @@ class UPaperTileMap;
 class ABossBase;
 class ABossLauncher;
 class ADA_Character;
+class AArenaEndDoor;
 
 USTRUCT()
 struct FTileSpawnData
@@ -55,6 +56,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Boss Support")
 	int32 iMinimumOffset = 4;
 
+	UPROPERTY(EditDefaultsOnly, Category = "End Door")
+	float fDoorSpawnHeight = 120.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "End Door")
+	int32 iDoorSpawnDepth = 1;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	float fPlayerSpawnHeight = 120.0f;
 
@@ -67,6 +74,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Boss Launchers")
 	TArray<TSubclassOf<ABossLauncher>> BossLaunchers;
 
+	UPROPERTY(EditDefaultsOnly, Category = "End Door")
+	TSubclassOf<AArenaEndDoor> EndDoor;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	ADA_Character* PlayerReference = nullptr;
 
@@ -77,6 +87,10 @@ protected:
 	FTileSpawnData PlayerStartData;
 
 	void SetPlayerSpawnData(FVector SpawnVec);
+
+	FTileSpawnData EndDoorSpawnData;
+
+	void SetDoorSpawnData(FVector SpawnVec);
 
 	TArray<struct FTileSpawnData> SupportSpawnDataArray;
 

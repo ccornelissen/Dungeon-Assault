@@ -11,6 +11,7 @@ class ABossLauncher;
 class ABossMelee;
 class AMinionSpawner;
 class USceneComponent;
+class AArenaEndDoor;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API ABossBase : public ACharacter
@@ -25,6 +26,7 @@ public:
 
 	void ApplyDamage(float Damage);
 
+	void SetEndDoor(AArenaEndDoor& DoorRef);
 
 protected:
 	// Called when the game starts or when spawned
@@ -59,6 +61,8 @@ private:
 	float fBossHealth = 100.0f;
 	
 	void DeathCheck();
+
+	AArenaEndDoor* EndDoor = nullptr;
 
 	TArray<AActor*> SpawnedActors;
 

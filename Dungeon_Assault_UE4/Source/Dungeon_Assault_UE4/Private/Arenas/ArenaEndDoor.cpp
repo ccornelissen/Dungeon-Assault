@@ -6,18 +6,18 @@
 
 AArenaEndDoor::AArenaEndDoor()
 {
-	//bHidden = true;
-
 	BookComponent = FindComponentByClass<UPaperFlipbookComponent>();
 
 	BookComponent->OnComponentBeginOverlap.AddDynamic(this, &AArenaEndDoor::OnOverlapBegin);
 
-	BookComponent->bGenerateOverlapEvents = true;
+	BookComponent->bGenerateOverlapEvents = false;
+
+	BookComponent->SetHiddenInGame(true);
 }
 
 void AArenaEndDoor::ActivateDoor()
 {
-	bHidden = false;
+	BookComponent->SetHiddenInGame(false);
 	BookComponent->bGenerateOverlapEvents = true;
 }
 

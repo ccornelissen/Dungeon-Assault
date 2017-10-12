@@ -5,6 +5,7 @@
 #include "WidgetComponent.h"
 #include "BossLauncher.h"
 #include "BossMelee.h"
+#include "ArenaEndDoor.h"
 #include "MinionSpawner.h"
 
 // Sets default values
@@ -62,6 +63,11 @@ void ABossBase::ApplyDamage(float Damage)
 	DeathCheck();
 }
 
+void ABossBase::SetEndDoor(AArenaEndDoor & DoorRef)
+{
+	EndDoor = &DoorRef;
+}
+
 void ABossBase::DeathCheck()
 {
 	if (fBossHealth <= 0)
@@ -78,6 +84,8 @@ void ABossBase::DeathCheck()
 				}
 			}
 		}
+
+		EndDoor->ActivateDoor();
 
 		Destroy();
 	}

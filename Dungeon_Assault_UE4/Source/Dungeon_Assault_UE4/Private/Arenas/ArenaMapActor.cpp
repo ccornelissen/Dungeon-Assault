@@ -9,6 +9,7 @@
 #include "BossBase.h"
 #include "BossLauncher.h"
 #include "DA_Character.h"
+#include "ArenaEndDoor.h"
 #include "EngineUtils.h"
 
 AArenaMapActor::AArenaMapActor()
@@ -95,6 +96,8 @@ void AArenaMapActor::GenerateMap()
 		
 		SetPlayerSpawnData(TileMapComp->GetTileCenterPosition(iPlayerSpawnDepth, HalfMapHeight, 0, true));
 
+		SetDoorSpawnData(TileMapComp->GetTileCenterPosition(MapWidth - iDoorSpawnDepth, HalfMapHeight, 0, true));
+
 		SetBossSpawnData(TileMapComp->GetTileCenterPosition(HalfMapWidth, HalfMapHeight, 0, true));
 
 		AddSupportSpawnData(TileMapComp->GetTileCenterPosition(HalfMapWidth + iMinimumOffset, HalfMapHeight + iMinimumOffset, 0, true));
@@ -120,7 +123,23 @@ void AArenaMapActor::SpawnActors()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to move Player"))
 	}
+
+	AArenaEndDoor* DoorToSpawn = nullptr;
 	
+	if (EndDoor)
+	{
+		EndDoorSpawnData.fVerticalModifier = fDoorSpawnHeight;
+
+		FRotator NewSpawnRot = EndDoorSpawnData.SpawnRotation;
+		FVector NewSpawnLoc = FVector(EndDoorSpawnData.SpawnLocation.X, EndDoorSpawnData.SpawnLocation.Y, EndDoorSpawnData.fVerticalModifier);
+
+		DoorToSpawn = GetWorld()->SpawnActor<AArenaEndDoor>(EndDoor, NewSpawnLoc, NewSpawnRot);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("End Door Not Set"))
+	}
+
 	if (BossBases.IsValidIndex(0))
 	{
 		BossSpawnData.fVerticalModifier = fBossSpawnHeight;
@@ -128,7 +147,13 @@ void AArenaMapActor::SpawnActors()
 		FVector NewSpawnLoc = FVector(BossSpawnData.SpawnLocation.X, BossSpawnData.SpawnLocation.Y, BossSpawnData.fVerticalModifier);
 		FRotator NewSpawnRot = FRotator(0,-180.0f,0);
 
-		GetWorld()->SpawnActor<ABossBase>(BossBases[0], NewSpawnLoc, NewSpawnRot);
+		ABossBase* CurBase = GetWorld()->SpawnActor<ABossBase>(BossBases[0], NewSpawnLoc, NewSpawnRot);
+
+		if (DoorToSpawn)
+		{
+			CurBase->SetEndDoor(*DoorToSpawn);
+		}
+		
 	}
 	else
 	{
@@ -170,6 +195,11 @@ void AArenaMapActor::SetBossSpawnData(FVector SpawnVec)
 void AArenaMapActor::SetPlayerSpawnData(FVector SpawnVec)
 {
 	PlayerStartData.SpawnLocation = SpawnVec;
+}
+
+void AArenaMapActor::SetDoorSpawnData(FVector SpawnVec)
+{
+	EndDoorSpawnData.SpawnLocation = SpawnVec;
 }
 
 void AArenaMapActor::AddSupportSpawnData(FVector SpawnVec)
