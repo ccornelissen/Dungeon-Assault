@@ -10,6 +10,7 @@ class UPaperTileMapComponent;
 class UBoxComponent;
 class UPaperTileSet;
 class UPaperTileMap;
+class APaperFlipbookActor;
 class ABossBase;
 class ABossLauncher;
 class ADA_Character;
@@ -74,11 +75,43 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	int32 iPlayerSpawnDepth = 1;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Main Bosses")
+	/////BOSS BASES///////
+
 	TArray<TSubclassOf<ABossBase>> BossBases;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Boss Launchers")
-	TArray<TSubclassOf<ABossLauncher>> BossLaunchers;
+	UPROPERTY(EditDefaultsOnly, Category = "Main Bosses")
+	TArray<TSubclassOf<ABossBase>> BossBasesDif1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Main Bosses")
+	TArray<TSubclassOf<ABossBase>> BossBasesDif2;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Main Bosses")
+	TArray<TSubclassOf<ABossBase>> BossBasesDif3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Main Bosses")
+	TArray<TSubclassOf<ABossBase>> BossBasesDif4;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Main Bosses")
+	TArray<TSubclassOf<ABossBase>> BossBasesDif5;
+
+	/////BOSS SUPPORTS///////
+
+	TArray<TSubclassOf<APaperFlipbookActor>> BossSupport;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Support")
+	TArray<TSubclassOf<APaperFlipbookActor>> BossSupportDif1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Support")
+	TArray<TSubclassOf<APaperFlipbookActor>> BossSupportDif2;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Support")
+	TArray<TSubclassOf<APaperFlipbookActor>> BossSupportDif3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Support")
+	TArray<TSubclassOf<APaperFlipbookActor>> BossSupportDif4;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Support")
+	TArray<TSubclassOf<APaperFlipbookActor>> BossSupportDif5;
 
 	UPROPERTY(EditDefaultsOnly, Category = "End Door")
 	TSubclassOf<AArenaEndDoor> EndDoor;
@@ -123,5 +156,11 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	UBoxComponent* BoxCollision = nullptr;
+
+	void CalculateDifficulty();
+
+	int32 iFloorDifficulty = 1;
+
+	int32 iNumberOfSupportToSpawn = 0;
 	
 };

@@ -22,6 +22,40 @@ AArenaMapActor::AArenaMapActor()
 	BoxCollision->bGenerateOverlapEvents = false;
 }
 
+void AArenaMapActor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	for (TActorIterator<ADA_Character> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		PlayerReference = *ActorItr;
+	}
+
+	CalculateDifficulty();
+
+	GenerateMap();
+
+	SpawnActors();
+
+	if (SpawnedBase)
+	{
+		SpawnedBase->SetSaveInstance(*SaveGameInstance);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No base reference"));
+	}
+
+	if (PlayerReference)
+	{
+		PlayerReference->SetSaveInstance(*SaveGameInstance);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No player reference"));
+	}
+}
+
 void AArenaMapActor::SetupSaveGame(UDASaveGame * GameSaveInstance)
 {
 	if (GameSaveInstance)
@@ -65,9 +99,9 @@ void AArenaMapActor::GenerateMap()
 
 			if (TileLayer != nullptr)
 			{
-				for (int mw = 0; mw < MapWidth; mw++)
+				for (int32 mw = 0; mw < MapWidth; mw++)
 				{
-					for (int ml = 0; ml < MapLength; ml++)
+					for (int32 ml = 0; ml < MapLength; ml++)
 					{
 						//Set the map border
 						if (ml == 0 || mw == 0)
@@ -84,7 +118,7 @@ void AArenaMapActor::GenerateMap()
 						}
 					}
 				}
-				
+
 			}
 			else
 			{
@@ -100,7 +134,7 @@ void AArenaMapActor::GenerateMap()
 		//Adjust the box collision for the new maps location and size
 		FVector BoxScale = FVector(MapWidth * 2.0f, 1.0f, MapLength * 2.0f);
 		BoxCollision->SetWorldScale3D(BoxScale);
-		FVector BoxLoc = FVector(((MapWidth * 0.5f) * iMapSquareSize) - (iMapSquareSize * 0.5f) , 1.0f, -((MapLength * 0.5f) * iMapSquareSize) + (iMapSquareSize * 0.5f));
+		FVector BoxLoc = FVector(((MapWidth * 0.5f) * iMapSquareSize) - (iMapSquareSize * 0.5f), 1.0f, -((MapLength * 0.5f) * iMapSquareSize) + (iMapSquareSize * 0.5f));
 		BoxCollision->SetRelativeLocation(BoxLoc);
 
 		//Set Spawn Info
@@ -108,14 +142,23 @@ void AArenaMapActor::GenerateMap()
 		int32 HalfMapHeight = (int32)MapLength / 2;
 
 		UE_LOG(LogTemp, Warning, TEXT("Map Width: %d, Map Heigh: %d"), HalfMapWidth, HalfMapHeight);
-		
+
 		SetPlayerSpawnData(TileMapComp->GetTileCenterPosition(iPlayerSpawnDepth, HalfMapHeight, 0, true));
 
 		SetDoorSpawnData(TileMapComp->GetTileCenterPosition(MapWidth - iDoorSpawnDepth, HalfMapHeight, 0, true));
 
 		SetBossSpawnData(TileMapComp->GetTileCenterPosition(HalfMapWidth, HalfMapHeight, 0, true));
 
-		AddSupportSpawnData(TileMapComp->GetTileCenterPosition(HalfMapWidth + iMinimumOffset, HalfMapHeight + iMinimumOffset, 0, true));
+		for (int32 iS = 0; iS < iNumberOfSupportToSpawn; iS++)
+		{
+			int32 WidthOffSet = FMath::RandRange(iMinimumOffset, HalfMapWidth);
+			int32 HeightOffSet = FMath::RandRange(iMinimumOffset, HalfMapHeight);
+
+			UE_LOG(LogTemp, Warning, TEXT("Adding support spawn data"));
+
+			AddSupportSpawnData(TileMapComp->GetTileCenterPosition(HalfMapWidth + WidthOffSet, HalfMapHeight + HeightOffSet, 0, true));
+		}
+		
 	}
 	else
 	{
@@ -140,7 +183,7 @@ void AArenaMapActor::SpawnActors()
 	}
 
 	AArenaEndDoor* DoorToSpawn = nullptr;
-	
+
 	if (EndDoor)
 	{
 		EndDoorSpawnData.fVerticalModifier = fDoorSpawnHeight;
@@ -160,7 +203,7 @@ void AArenaMapActor::SpawnActors()
 		BossSpawnData.fVerticalModifier = fBossSpawnHeight;
 
 		FVector NewSpawnLoc = FVector(BossSpawnData.SpawnLocation.X, BossSpawnData.SpawnLocation.Y, BossSpawnData.fVerticalModifier);
-		FRotator NewSpawnRot = FRotator(0,-180.0f,0);
+		FRotator NewSpawnRot = FRotator(0, -180.0f, 0);
 
 		SpawnedBase = GetWorld()->SpawnActor<ABossBase>(BossBases[0], NewSpawnLoc, NewSpawnRot);
 
@@ -168,57 +211,33 @@ void AArenaMapActor::SpawnActors()
 		{
 			SpawnedBase->SetEndDoor(*DoorToSpawn);
 		}
-		
+
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn Boss"))
+		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn Boss"));
 	}
 
-	if (BossLaunchers.IsValidIndex(0) && SupportSpawnDataArray.IsValidIndex(0))
+	for (int32 iS = 0; iS <= (SupportSpawnDataArray.Num() - 1); iS++)
 	{
-		SupportSpawnDataArray[0].fVerticalModifier = fSupportSpawnHeight;
+		int32 iSupportSpawn = FMath::RandRange(0, (BossSupport.Num() - 1));
 
-		FVector NewSpawnLoc = FVector(SupportSpawnDataArray[0].SpawnLocation.X, SupportSpawnDataArray[0].SpawnLocation.Y, SupportSpawnDataArray[0].fVerticalModifier);
-		FRotator NewSpawnRot = SupportSpawnDataArray[0].SpawnRotation;
+		if (BossSupport.IsValidIndex(iSupportSpawn) && SupportSpawnDataArray.IsValidIndex(iS))
+		{
+			SupportSpawnDataArray[iS].fVerticalModifier = fSupportSpawnHeight;
 
-		GetWorld()->SpawnActor<ABossLauncher>(BossLaunchers[0], NewSpawnLoc, NewSpawnRot);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to Boss Launcher"))
-	}
-}
+			FVector NewSpawnLoc = FVector(SupportSpawnDataArray[iS].SpawnLocation.X, SupportSpawnDataArray[iS].SpawnLocation.Y, SupportSpawnDataArray[iS].fVerticalModifier);
+			FRotator NewSpawnRot = SupportSpawnDataArray[iS].SpawnRotation;
 
-void AArenaMapActor::BeginPlay()
-{
-	Super::BeginPlay();
-
-	for (TActorIterator<ADA_Character> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		PlayerReference = *ActorItr;
-	}
-
-	GenerateMap();
-
-	SpawnActors();
-
-	if (SpawnedBase)
-	{
-		SpawnedBase->SetSaveInstance(*SaveGameInstance);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No base reference"));
-	}
-
-	if (PlayerReference)
-	{
-		PlayerReference->SetSaveInstance(*SaveGameInstance);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No player reference"));
+			if (BossSupport[iSupportSpawn]->IsChildOf(ABossLauncher::StaticClass()))
+			{
+				GetWorld()->SpawnActor<ABossLauncher>(BossSupport[iSupportSpawn], NewSpawnLoc, NewSpawnRot);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to Boss Launcher"));
+		}
 	}
 }
 
@@ -243,4 +262,61 @@ void AArenaMapActor::AddSupportSpawnData(FVector SpawnVec)
 	TempData.SpawnLocation = SpawnVec;
 
 	SupportSpawnDataArray.Add(TempData);
+}
+
+void AArenaMapActor::CalculateDifficulty()
+{
+	if (SaveGameInstance)
+	{
+		int32 iFloor = SaveGameInstance->GameplaySaveData.iLastWaveCompleted + 1;
+
+		UE_LOG(LogTemp, Warning, TEXT("%d"), iFloor);
+
+		if (iFloor < 10)
+		{
+			iFloorDifficulty = 1;
+
+			iNumberOfSupportToSpawn = iFloor - 1;
+
+			BossBases = BossBasesDif1;
+			BossSupport = BossSupportDif1;
+		}
+		else if (iFloor < 20)
+		{
+			iFloorDifficulty = 2;
+
+			iNumberOfSupportToSpawn = iFloor - 11;
+
+			BossBases = BossBasesDif2;
+			BossSupport = BossSupportDif2;
+		}
+		else if (iFloor < 30)
+		{
+			iFloorDifficulty = 3;
+
+			iNumberOfSupportToSpawn = iFloor - 21;
+
+			BossBases = BossBasesDif3;
+			BossSupport = BossSupportDif3;
+		}
+		else if (iFloor < 40)
+		{
+			iFloorDifficulty = 4;
+
+			iNumberOfSupportToSpawn = iFloor - 31;
+
+			BossBases = BossBasesDif4;
+			BossSupport = BossSupportDif4;
+		}
+		else
+		{
+			iFloorDifficulty = 5;
+
+			iNumberOfSupportToSpawn = iFloor - 41;
+
+			BossBases = BossBasesDif5;
+			BossSupport = BossSupportDif5;
+		}
+	}
+
 }
