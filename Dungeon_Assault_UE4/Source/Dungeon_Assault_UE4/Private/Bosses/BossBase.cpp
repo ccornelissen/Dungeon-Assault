@@ -101,6 +101,8 @@ void ABossBase::DeathCheck()
 
 			SaveGameInstance->GameplaySaveData.iLastWaveCompleted = iNewFloor;
 
+			UE_LOG(LogTemp, Warning, TEXT("Saving game, Floor to save: %d"), SaveGameInstance->GameplaySaveData.iLastWaveCompleted);
+
 			UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
 		}
 		else

@@ -44,8 +44,7 @@ public:
 
 	void SpawnActors();
 
-	UFUNCTION(BlueprintCallable, Category = "Save")
-	void SetupSaveGame(UDASaveGame* GameSaveInstance);
+	void SetupSaveGame();
 
 protected:
 	// Called when the game starts or when spawned

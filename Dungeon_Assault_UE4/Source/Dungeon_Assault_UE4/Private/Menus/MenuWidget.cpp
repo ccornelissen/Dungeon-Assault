@@ -9,9 +9,7 @@
 #include "ShieldEquipComponent.h"
 #include "ArmorEquipComponent.h"
 #include "HelmetEquipComponent.h"
-#include "DASaveGame.h"
-#include "Kismet/GameplayStatics.h"
-#include "Engine.h"
+#include "Dungeon_Assault_UE4.h"
 
 void UMenuWidget::NativeConstruct()
 {
@@ -28,9 +26,14 @@ void UMenuWidget::SetupSaveGame(UDASaveGame * GameSaveInstance)
 	{
 		SaveGameInstance = GameSaveInstance;
 
-		UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
-
-		SaveGameInstance = Cast<UDASaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex));
+		if (UGameplayStatics::DoesSaveGameExist(SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex))
+		{
+			SaveGameInstance = Cast<UDASaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex));
+		}
+		else
+		{
+			UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
+		}
 	}
 }
 
@@ -161,6 +164,8 @@ void UMenuWidget::ChangeResolution(float fRes)
 		if (SaveGameInstance)
 		{
 			SaveGameInstance->MenuSaveData.SavedResolution = fRes;
+
+			UE_LOG(LogTemp, Warning, TEXT("Save Res: %f"), SaveGameInstance->MenuSaveData.SavedResolution);
 		}
 
 		float fX = (1920 * fRes)/1920;
@@ -181,7 +186,7 @@ void UMenuWidget::ChangeMusicMultiplier(float fMulti)
 	//Save the float to the player
 	if (SaveGameInstance)
 	{
-		SaveGameInstance->MenuSaveData.SavedSFXVolume = fMulti;
+		SaveGameInstance->MenuSaveData.SaveMusicVolume = fMulti;
 	}
 }
 

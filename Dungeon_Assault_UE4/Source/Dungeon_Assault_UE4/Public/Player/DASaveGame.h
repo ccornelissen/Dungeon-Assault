@@ -50,27 +50,38 @@ struct FMenuSaveData
 
 	//////OPTIONS/////////
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Options")
 	float SavedResolution = 1.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Options")
 	EDynamicResState SavedDynamicResState = EDynamicResState::DS_Enabled;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Options")
 	EControlState SavedControlState = EControlState::CS_Joystick;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Options")
 	float SaveMusicVolume = 1.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Options")
 	float SavedSFXVolume = 1.0f;
 
 	//////STORE/////////
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Store")
 	int iPlayerCoins = 0;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Store")
 	int iLastStoreWeapon = 0;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Store")
 	int iLastStoreOffhand = 0;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Store")
 	int iLastStoreArmor = 0;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Store")
 	int iLastStoreHelmet = 0;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Store")
 	EAdState SavedAdState = EAdState::AS_Free;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
@@ -91,13 +102,20 @@ struct FGameplaySaveData
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
 	int iLastWaveCompleted = 1;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
 	UPaperFlipbookComponent* SetMainWeapon;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
 	UPaperFlipbookComponent* SetMainOffhand;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
 	UPaperFlipbookComponent* SetSecondaryWeapon;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
 	UPaperFlipbookComponent* SetSecondaryOffhand;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
 	UPaperFlipbookComponent* SetHelmet;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
 	UPaperFlipbookComponent* SetArmor;
 };
 
@@ -105,23 +123,19 @@ UCLASS()
 class DUNGEON_ASSAULT_UE4_API UDASaveGame : public USaveGame
 {
 	GENERATED_BODY()
-
-	UDASaveGame();
 	
 public:
-	UPROPERTY(VisibleAnywhere, Category = "SetUp")
-	FString PlayerName;
-
 	UPROPERTY(VisibleAnywhere, Category = "SetUp")
 	FString SaveSlotName;
 
 	UPROPERTY(VisibleAnywhere, Category = "SetUp")
 	uint32 UserIndex;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Save Data")
+	UPROPERTY(VisibleAnywhere, Category = Basic)
 	FGameplaySaveData GameplaySaveData;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Save Data")
+	UPROPERTY(VisibleAnywhere, Category = Basic)
 	FMenuSaveData MenuSaveData;
-	
+
+	UDASaveGame();
 };

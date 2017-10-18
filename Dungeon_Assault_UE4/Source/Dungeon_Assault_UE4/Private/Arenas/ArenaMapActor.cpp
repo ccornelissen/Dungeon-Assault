@@ -31,6 +31,8 @@ void AArenaMapActor::BeginPlay()
 		PlayerReference = *ActorItr;
 	}
 
+	SetupSaveGame();
+
 	CalculateDifficulty();
 
 	GenerateMap();
@@ -56,8 +58,10 @@ void AArenaMapActor::BeginPlay()
 	}
 }
 
-void AArenaMapActor::SetupSaveGame(UDASaveGame * GameSaveInstance)
+void AArenaMapActor::SetupSaveGame()
 {
+	UDASaveGame* GameSaveInstance = Cast<UDASaveGame>(UGameplayStatics::CreateSaveGameObject(UDASaveGame::StaticClass()));
+
 	if (GameSaveInstance)
 	{
 		SaveGameInstance = GameSaveInstance;
@@ -268,7 +272,7 @@ void AArenaMapActor::CalculateDifficulty()
 {
 	if (SaveGameInstance)
 	{
-		int32 iFloor = SaveGameInstance->GameplaySaveData.iLastWaveCompleted + 1;
+		int32 iFloor = SaveGameInstance->GameplaySaveData.iLastWaveCompleted;
 
 		UE_LOG(LogTemp, Warning, TEXT("%d"), iFloor);
 
