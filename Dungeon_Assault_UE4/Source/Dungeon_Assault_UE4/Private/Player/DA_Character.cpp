@@ -149,6 +149,15 @@ void ADA_Character::SetPlayerUI(UDAPlayerUI & UIToSet)
 	PlayerUI = &UIToSet;
 }
 
+void ADA_Character::AddCoins(int32 ValueToAdd)
+{
+	int32 NewValue = SaveGameInstance->MenuSaveData.iPlayerCoins + ValueToAdd;
+
+	SaveGameInstance->MenuSaveData.iPlayerCoins = NewValue;
+
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
+}
+
 void ADA_Character::SetSaveInstance(UDASaveGame & SaveGame)
 {
 	SaveGameInstance = &SaveGame;

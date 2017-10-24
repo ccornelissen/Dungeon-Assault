@@ -67,6 +67,8 @@ void AArenaMapActor::SetupSaveGame()
 		SaveGameInstance = GameSaveInstance;
 
 		SaveGameInstance = Cast<UDASaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex));
+
+		UE_LOG(LogTemp, Warning, TEXT("Player Coins: %d"), SaveGameInstance->MenuSaveData.iPlayerCoins);
 	}
 	else
 	{

@@ -13,6 +13,7 @@ class AMinionSpawner;
 class USceneComponent;
 class AArenaEndDoor;
 class UDASaveGame;
+class ADACoin;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API ABossBase : public ACharacter
@@ -52,6 +53,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "BossComponents")
 	TSubclassOf<AMinionSpawner> SpawnerToSpawn = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player Coin")
+	TSubclassOf<ADACoin> Coin = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossComponents")
 	USceneComponent* TailComponent;

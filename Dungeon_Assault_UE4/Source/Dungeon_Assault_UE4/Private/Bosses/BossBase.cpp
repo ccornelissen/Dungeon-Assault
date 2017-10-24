@@ -8,6 +8,7 @@
 #include "ArenaEndDoor.h"
 #include "Dungeon_Assault_UE4.h"
 #include "MinionSpawner.h"
+#include "DACoin.h"
 
 // Sets default values
 ABossBase::ABossBase()
@@ -94,6 +95,19 @@ void ABossBase::DeathCheck()
 		}
 
 		EndDoor->ActivateDoor();
+
+		if (Coin)
+		{
+			FRotator SpawnRot = FRotator(0.0, -90.0, 90.0);
+			
+			FVector SpawnVec = FVector(GetActorLocation().X, GetActorLocation().Y, 50.0);
+
+			ADACoin* SpawnedCoin = GetWorld()->SpawnActor<ADACoin>(Coin, SpawnVec, SpawnRot);
+
+			int32 BossValue = SaveGameInstance->GameplaySaveData.iLastWaveCompleted * 50;
+
+			SpawnedCoin->SetValue(BossValue);
+		}
 
 		if (SaveGameInstance)
 		{

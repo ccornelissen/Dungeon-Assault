@@ -38,6 +38,8 @@ public:
 
 	void SetPlayerUI(UDAPlayerUI& UIToSet);
 
+	void AddCoins(int32 ValueToAdd);
+
 	void Heal(float AmountToHeal);
 
 	// Called to bind functionality to input
