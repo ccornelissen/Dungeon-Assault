@@ -23,6 +23,7 @@ void ABossBase::BeginPlay()
 	Super::BeginPlay();
 
 	UWidgetComponent* WidgetComp = FindComponentByClass<UWidgetComponent>();
+
 	if(WidgetComp)
 	{
 		BaseHealthBar = Cast<UEnemyHealthBar>(WidgetComp->GetUserWidgetObject());
@@ -41,10 +42,13 @@ void ABossBase::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Lacking the widget comp"));
 	}
-	
-
 
 	SetComponents();
+
+	SetSaveInstance();
+
+	CalculateDifficulty();
+
 	SpawnComponents();
 }
 
@@ -72,9 +76,67 @@ void ABossBase::SetEndDoor(AArenaEndDoor & DoorRef)
 	EndDoor = &DoorRef;
 }
 
-void ABossBase::SetSaveInstance(UDASaveGame & SaveGame)
+void ABossBase::SetSaveInstance()
 {
-	SaveGameInstance = &SaveGame;
+	UDASaveGame* GameSaveInstance = Cast<UDASaveGame>(UGameplayStatics::CreateSaveGameObject(UDASaveGame::StaticClass()));
+
+	if (GameSaveInstance)
+	{
+		SaveGameInstance = GameSaveInstance;
+
+		SaveGameInstance = Cast<UDASaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex));
+	}
+}
+
+void ABossBase::CalculateDifficulty()
+{
+	if (SaveGameInstance)
+	{
+		int32 CurFloor = SaveGameInstance->GameplaySaveData.iLastFloorCompleted;
+
+		if (CurFloor < 10)
+		{
+			BossSupport = BossComponentDif1;
+
+			if (CurFloor > 1)
+			{
+				iNumberOfComponentsToSpawn = (int32)CurFloor / 2;
+			}
+		}
+		else if (CurFloor < 20)
+		{
+			BossSupport = BossComponentDif2;
+
+			CurFloor = CurFloor - 10;
+
+			iNumberOfComponentsToSpawn = (int32)CurFloor / 2;
+
+		}
+		else if (CurFloor < 30)
+		{
+			BossSupport = BossComponentDif3;
+
+			CurFloor = CurFloor - 20;
+
+			iNumberOfComponentsToSpawn = (int32)CurFloor / 2;
+		}
+		else if (CurFloor < 40)
+		{
+			BossSupport = BossComponentDif4;
+
+			CurFloor = CurFloor - 30;
+
+			iNumberOfComponentsToSpawn = (int32)CurFloor / 2;
+		}
+		else
+		{
+			BossSupport = BossComponentDif5;
+
+			CurFloor = CurFloor - 40;
+
+			iNumberOfComponentsToSpawn = (int32)CurFloor / 2;
+		}
+	}
 }
 
 void ABossBase::DeathCheck()
@@ -96,26 +158,28 @@ void ABossBase::DeathCheck()
 
 		EndDoor->ActivateDoor();
 
-		if (Coin)
-		{
-			FRotator SpawnRot = FRotator(0.0, -90.0, 90.0);
-			
-			FVector SpawnVec = FVector(GetActorLocation().X, GetActorLocation().Y, 50.0);
-
-			ADACoin* SpawnedCoin = GetWorld()->SpawnActor<ADACoin>(Coin, SpawnVec, SpawnRot);
-
-			int32 BossValue = SaveGameInstance->GameplaySaveData.iLastWaveCompleted * 50;
-
-			SpawnedCoin->SetValue(BossValue);
-		}
-
 		if (SaveGameInstance)
 		{
-			int32 iNewFloor = SaveGameInstance->GameplaySaveData.iLastWaveCompleted + 1;
+			SaveGameInstance = Cast<UDASaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex));
 
-			SaveGameInstance->GameplaySaveData.iLastWaveCompleted = iNewFloor;
+			if (Coin)
+			{
+				FRotator SpawnRot = FRotator(0.0, -90.0, 90.0);
 
-			UE_LOG(LogTemp, Warning, TEXT("Saving game, Floor to save: %d"), SaveGameInstance->GameplaySaveData.iLastWaveCompleted);
+				FVector SpawnVec = FVector(GetActorLocation().X, GetActorLocation().Y, 50.0);
+
+				ADACoin* SpawnedCoin = GetWorld()->SpawnActor<ADACoin>(Coin, SpawnVec, SpawnRot);
+
+				int32 BossValue = SaveGameInstance->GameplaySaveData.iLastFloorCompleted * 50;
+
+				SpawnedCoin->SetValue(BossValue);
+			}
+		
+			int32 iNewFloor = SaveGameInstance->GameplaySaveData.iLastFloorCompleted + 1;
+
+			SaveGameInstance->GameplaySaveData.iLastFloorCompleted = iNewFloor;
+
+			UE_LOG(LogTemp, Warning, TEXT("Saving game, Floor to save: %d"), SaveGameInstance->GameplaySaveData.iLastFloorCompleted);
 
 			UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex);
 		}
@@ -130,30 +194,50 @@ void ABossBase::DeathCheck()
 
 void ABossBase::SpawnComponents()
 {
-	if (HeadComponent && LauncherToSpawn)
-	{
-		ABossLauncher* BossHead = GetWorld()->SpawnActor<ABossLauncher>(LauncherToSpawn, HeadComponent->GetComponentLocation(), HeadComponent->GetComponentRotation());
+	int32 iComponent = 0;
 
-		SpawnedActors.Add(BossHead);
-	}
-
-	if (TailComponent && SpawnerToSpawn)
+	for (int i = 0; i < iNumberOfComponentsToSpawn; i++)
 	{
-		AMinionSpawner* ButtSpawn = GetWorld()->SpawnActor<AMinionSpawner>(SpawnerToSpawn, TailComponent->GetComponentLocation(), TailComponent->GetComponentRotation());
+		int32 iSupportToSpawn = FMath::RandRange(0, (BossSupport.Num() - 1));
 
-		SpawnedActors.Add(ButtSpawn);
-	}
-	
-	for (int i = 0; i < ArmComponents.Num(); i++)
-	{
-		if (ArmComponents.IsValidIndex(i) && MeleeToSpawn)
+		if (BossSupport.IsValidIndex(iSupportToSpawn))
 		{
-			if (ArmComponents[i] != nullptr)
+			if (BossSupport[iSupportToSpawn]->IsChildOf(ABossLauncher::StaticClass()) && ComponentSpawns.IsValidIndex(iComponent))
 			{
-				ABossMelee* TempMelee = GetWorld()->SpawnActor<ABossMelee>(MeleeToSpawn, ArmComponents[i]->GetComponentLocation(), ArmComponents[i]->GetComponentRotation());
+				if (ComponentSpawns[iComponent])
+				{
+					ABossLauncher* Launcher = GetWorld()->SpawnActor<ABossLauncher>(BossSupport[iSupportToSpawn], ComponentSpawns[iComponent]->GetComponentLocation(), ComponentSpawns[iComponent]->GetComponentRotation());
 
-				SpawnedActors.Add(TempMelee);
+					SpawnedActors.Add(Launcher);
+
+					iComponent++;
+				}
 			}
+
+			if (BossSupport[iSupportToSpawn]->IsChildOf(AMinionSpawner::StaticClass()) && ComponentSpawns.IsValidIndex(iComponent))
+			{
+				if (ComponentSpawns[iComponent])
+				{
+					AMinionSpawner* Spawner = GetWorld()->SpawnActor<AMinionSpawner>(BossSupport[iSupportToSpawn], ComponentSpawns[iComponent]->GetComponentLocation(), ComponentSpawns[iComponent]->GetComponentRotation());
+
+					SpawnedActors.Add(Spawner);
+
+					iComponent++;
+				}
+			}
+
+			if (BossSupport[iSupportToSpawn]->IsChildOf(ABossMelee::StaticClass()) && ComponentSpawns.IsValidIndex(iComponent))
+			{
+				if (ComponentSpawns[iComponent])
+				{
+					ABossMelee* TempMelee = GetWorld()->SpawnActor<ABossMelee>(BossSupport[iSupportToSpawn], ComponentSpawns[iComponent]->GetComponentLocation(), ComponentSpawns[iComponent]->GetComponentRotation());
+
+					SpawnedActors.Add(TempMelee);
+
+					iComponent++;
+				}
+			}
+				
 		}
 	}
 }

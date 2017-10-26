@@ -103,7 +103,7 @@ struct FGameplaySaveData
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
-	int iLastWaveCompleted = 1;
+	int iLastFloorCompleted = 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
 	UPaperFlipbookComponent* SetMainWeapon;

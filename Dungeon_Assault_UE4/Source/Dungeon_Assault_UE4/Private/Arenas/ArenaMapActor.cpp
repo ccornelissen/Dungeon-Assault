@@ -39,15 +39,6 @@ void AArenaMapActor::BeginPlay()
 
 	SpawnActors();
 
-	if (SpawnedBase)
-	{
-		SpawnedBase->SetSaveInstance(*SaveGameInstance);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No base reference"));
-	}
-
 	if (PlayerReference)
 	{
 		PlayerReference->SetSaveInstance(*SaveGameInstance);
@@ -274,7 +265,7 @@ void AArenaMapActor::CalculateDifficulty()
 {
 	if (SaveGameInstance)
 	{
-		int32 iFloor = SaveGameInstance->GameplaySaveData.iLastWaveCompleted;
+		int32 iFloor = SaveGameInstance->GameplaySaveData.iLastFloorCompleted;
 
 		UE_LOG(LogTemp, Warning, TEXT("%d"), iFloor);
 

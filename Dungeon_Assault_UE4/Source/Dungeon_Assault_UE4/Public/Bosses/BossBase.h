@@ -11,6 +11,7 @@ class ABossLauncher;
 class ABossMelee;
 class AMinionSpawner;
 class USceneComponent;
+class APaperFlipbookActor;
 class AArenaEndDoor;
 class UDASaveGame;
 class ADACoin;
@@ -30,42 +31,50 @@ public:
 
 	void SetEndDoor(AArenaEndDoor& DoorRef);
 
-	void SetSaveInstance(UDASaveGame& SaveGame);
+	void SetSaveInstance();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "BossComponents")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Boss Components")
 	void SetComponents();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
 	UEnemyHealthBar* BaseHealthBar = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossComponents")
-	TArray<USceneComponent*> ArmComponents;
-
-	UPROPERTY(EditDefaultsOnly, Category = "BossComponents")
-	TSubclassOf<ABossLauncher> LauncherToSpawn = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, Category = "BossComponents")
-	TSubclassOf<ABossMelee> MeleeToSpawn = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, Category = "BossComponents")
-	TSubclassOf<AMinionSpawner> SpawnerToSpawn = nullptr;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Player Coin")
 	TSubclassOf<ADACoin> Coin = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossComponents")
-	USceneComponent* TailComponent;
+	//Boss Component Spawn Arrays//
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossComponents")
-	USceneComponent* HeadComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Boss Components")
+	TArray<USceneComponent*> ComponentSpawns;
+
+	TArray<TSubclassOf<APaperFlipbookActor>> BossSupport;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Components")
+	TArray<TSubclassOf<APaperFlipbookActor>> BossComponentDif1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Components")
+	TArray<TSubclassOf<APaperFlipbookActor>> BossComponentDif2;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Components")
+	TArray<TSubclassOf<APaperFlipbookActor>> BossComponentDif3;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Components")
+	TArray<TSubclassOf<APaperFlipbookActor>> BossComponentDif4;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Boss Components")
+	TArray<TSubclassOf<APaperFlipbookActor>> BossComponentDif5;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	float fBossHealth = 100.0f;
+
+	int32 iNumberOfComponentsToSpawn = 0;
+
+	void CalculateDifficulty();
 	
 	void DeathCheck();
 
