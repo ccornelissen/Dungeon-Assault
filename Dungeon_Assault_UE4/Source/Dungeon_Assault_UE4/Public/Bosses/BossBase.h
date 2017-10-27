@@ -72,11 +72,16 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	float fBossHealth = 100.0f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Player Coin")
+	float fBossCoinModifier = 50.0f;
+
 	int32 iNumberOfComponentsToSpawn = 0;
 
 	void CalculateDifficulty();
 	
 	void DeathCheck();
+
+	void SpawnCoin();
 
 	AArenaEndDoor* EndDoor = nullptr;
 

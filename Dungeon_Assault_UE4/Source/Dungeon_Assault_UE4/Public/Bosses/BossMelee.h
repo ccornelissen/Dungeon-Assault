@@ -16,6 +16,7 @@ enum class EBossMeleeAnimState : uint8
 
 class UPaperFlipbookComponent;
 class UPaperFlipbook;
+class ADACoin;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API ABossMelee : public APaperFlipbookActor
@@ -65,5 +66,16 @@ protected:
 	void AnimSwitch(EBossMeleeAnimState SwitchState);
 
 	void SwitchToIdle();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player Coin")
+	TSubclassOf<ADACoin> Coin = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player Coin")
+	float CoinModifier = 5.0f;
+
+private:
+	void DestroyMelee();
+
+	void SpawnCoin();
 
 };

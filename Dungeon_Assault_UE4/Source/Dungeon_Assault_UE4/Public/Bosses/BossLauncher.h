@@ -10,6 +10,7 @@ class ABossProjectile;
 class ADA_Character;
 class UEnemyHealthBar;
 class ABossBase;
+class ADACoin;
 
 /**
  * 
@@ -52,9 +53,18 @@ protected:
 
 	FTimerHandle ReloadTimerHandle;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Player Coin")
+	TSubclassOf<ADACoin> Coin = nullptr;
+
 private:
 	void DestroyLauncher();
 
+	void SpawnCoin();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player Coin")
+	float CoinModifier = 10.0f;
+
 	ADA_Character* Player;
+
 	ABossBase* MainBoss;
 };

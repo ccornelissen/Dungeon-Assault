@@ -162,18 +162,7 @@ void ABossBase::DeathCheck()
 		{
 			SaveGameInstance = Cast<UDASaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex));
 
-			if (Coin)
-			{
-				FRotator SpawnRot = FRotator(0.0, -90.0, 90.0);
-
-				FVector SpawnVec = FVector(GetActorLocation().X, GetActorLocation().Y, 50.0);
-
-				ADACoin* SpawnedCoin = GetWorld()->SpawnActor<ADACoin>(Coin, SpawnVec, SpawnRot);
-
-				int32 BossValue = SaveGameInstance->GameplaySaveData.iLastFloorCompleted * 50;
-
-				SpawnedCoin->SetValue(BossValue);
-			}
+			SpawnCoin();
 		
 			int32 iNewFloor = SaveGameInstance->GameplaySaveData.iLastFloorCompleted + 1;
 
@@ -189,6 +178,22 @@ void ABossBase::DeathCheck()
 		}
 
 		Destroy();
+	}
+}
+
+void ABossBase::SpawnCoin()
+{
+	if (Coin)
+	{
+		FRotator SpawnRot = FRotator(0.0, -90.0, 90.0);
+
+		FVector SpawnVec = FVector(GetActorLocation().X, GetActorLocation().Y, 50.0);
+
+		ADACoin* SpawnedCoin = GetWorld()->SpawnActor<ADACoin>(Coin, SpawnVec, SpawnRot);
+
+		int32 BossValue = SaveGameInstance->GameplaySaveData.iLastFloorCompleted * fBossCoinModifier;
+
+		SpawnedCoin->SetValue(BossValue);
 	}
 }
 

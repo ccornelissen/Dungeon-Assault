@@ -7,6 +7,7 @@
 #include "MinionSpawner.generated.h"
 
 class ABossMinion;
+class ADACoin;
 /**
  * 
  */
@@ -30,4 +31,14 @@ protected:
 
 	FTimerHandle SpawnTimerHandle;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Player Coin")
+	TSubclassOf<ADACoin> Coin = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player Coin")
+	float CoinModifier = 15.0f;
+
+private:
+	void DestroySpawner();
+
+	void SpawnCoin();
 };

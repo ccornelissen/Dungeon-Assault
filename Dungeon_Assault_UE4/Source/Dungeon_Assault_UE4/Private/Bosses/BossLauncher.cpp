@@ -8,13 +8,15 @@
 #include "WidgetComponent.h"
 #include "BossBase.h"
 #include "PaperFlipbookComponent.h"
+#include "DACoin.h"
+#include "Dungeon_Assault_UE4.h"
+
 
 ABossLauncher::ABossLauncher()
 {
 	FireFromComponent = CreateDefaultSubobject<USceneComponent>(TEXT("FireFromComponent"));
 	FireFromComponent->SetupAttachment(RootComponent);
 }
-
 
 void ABossLauncher::BeginPlay()
 {
@@ -118,5 +120,27 @@ void ABossLauncher::DestroyLauncher()
 {
 	GetWorld()->GetTimerManager().ClearTimer(ReloadTimerHandle);
 
+	SpawnCoin();
+
 	Destroy();
+}
+
+void ABossLauncher::SpawnCoin()
+{
+	UDASaveGame* SaveGameInstance = Cast<UDASaveGame>(UGameplayStatics::CreateSaveGameObject(UDASaveGame::StaticClass()));
+
+	SaveGameInstance = Cast<UDASaveGame>(UGameplayStatics::LoadGameFromSlot(SaveGameInstance->SaveSlotName, SaveGameInstance->UserIndex));
+
+	if (Coin && SaveGameInstance)
+	{
+		FRotator SpawnRot = FRotator(0.0, -90.0, 90.0);
+
+		FVector SpawnVec = FVector(GetActorLocation().X, GetActorLocation().Y, 50.0);
+
+		ADACoin* SpawnedCoin = GetWorld()->SpawnActor<ADACoin>(Coin, SpawnVec, SpawnRot);
+
+		int32 CoinValue = SaveGameInstance->GameplaySaveData.iLastFloorCompleted * CoinModifier;
+
+		SpawnedCoin->SetValue(CoinValue);
+	}
 }
