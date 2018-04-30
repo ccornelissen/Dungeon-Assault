@@ -11,6 +11,7 @@ class USpringArmComponent;
 class UPaperFlipbookComponent;
 class UWeaponEquipComponent;
 class UShieldEquipComponent;
+class URangedEquipComponent;
 class UDAPlayerUI;
 class UPaperFlipbook;
 class UDASaveGame;
@@ -93,6 +94,8 @@ protected:
 	UWeaponEquipComponent* CurWeapon = nullptr;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
 	UShieldEquipComponent* CurShield = nullptr;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
+	URangedEquipComponent* CurRanged = nullptr;
 
 	//PLAYER BODY COMPONENTS
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")

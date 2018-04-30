@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "WeaponEquipComponent.h"
 #include "ShieldEquipComponent.h"
+#include "RangedEquipComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperFlipbook.h"
 #include "Dungeon_Assault_UE4.h"
@@ -54,6 +55,9 @@ ADA_Character::ADA_Character()
 	CurShield = CreateDefaultSubobject<UShieldEquipComponent>(TEXT("ShieldSlot"));
 	CurShield->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	CurShield->bGenerateOverlapEvents = false;
+
+	CurRanged = CreateDefaultSubobject<URangedEquipComponent>(TEXT("RangedSlot"));
+	CurRanged->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
 	ShieldIdlePoint = CreateDefaultSubobject<USceneComponent>(TEXT("ShieldIdlePoint"));
 	ShieldIdlePoint->SetupAttachment(RootComponent);
@@ -108,6 +112,18 @@ void ADA_Character::BeginPlay()
 			}
 
 			CurShield->UnBlock();
+		}
+	}
+
+	if (CurRanged && FirstOffhand)
+	{
+		if (FirstOffhand->IsChildOf(URangedEquipComponent::StaticClass()))
+		{
+			CurRanged->RangedInfo = FirstOffhand->GetDefaultObject<URangedEquipComponent>()->RangedInfo;
+
+			CurRanged->SetWeapon();
+
+			CurRanged->SetPlayer(*this);
 		}
 	}
 
@@ -217,18 +233,30 @@ void ADA_Character::UseWeapon()
 
 void ADA_Character::OffhandUsed()
 {
-	if (CurShield->ShieldInfo.IdleBook != nullptr)
+	if (CurShield)
 	{
-		CurShield->Block();
+		if (CurShield->ShieldInfo.IdleBook != nullptr)
+		{
+			CurShield->Block();
+		}
+	}
+	
+	if (CurRanged)
+	{
+		CurRanged->Attack();
 	}
 }
 
 void ADA_Character::OffhandReleased()
 {
-	if (CurShield->ShieldInfo.IdleBook != nullptr)
+	if (CurShield)
 	{
-		CurShield->UnBlock();
+		if (CurShield->ShieldInfo.IdleBook != nullptr)
+		{
+			CurShield->UnBlock();
+		}
 	}
+	
 }
 
 void ADA_Character::SwitchWeapon()
@@ -272,13 +300,25 @@ void ADA_Character::SwitchWeapon()
 
 	if (bFirstOffhandEquiped)
 	{
-		if (CurShield && SecondOffhand)
+		if ((CurShield || CurShield) && SecondOffhand)
 		{
 			if (SecondOffhand->IsChildOf(UShieldEquipComponent::StaticClass()))
 			{
 				CurShield->ShieldInfo = SecondOffhand->GetDefaultObject<UShieldEquipComponent>()->ShieldInfo;
 
+				CurRanged = nullptr;
+
 				CurShield->SetShield();
+			}
+			else if (SecondOffhand->IsChildOf(URangedEquipComponent::StaticClass()))
+			{
+				CurRanged->RangedInfo = SecondOffhand->GetDefaultObject<URangedEquipComponent>()->RangedInfo;
+
+				CurShield = nullptr;
+
+				CurRanged->SetWeapon();
+
+				CurRanged->SetPlayer(*this);
 			}
 		}
 		else
@@ -290,18 +330,25 @@ void ADA_Character::SwitchWeapon()
 	}
 	else
 	{
-		if (CurShield && FirstOffhand)
+
+		if ((CurShield || CurShield) && FirstOffhand)
 		{
-			if (FirstOffhand->IsChildOf(UShieldEquipComponent::StaticClass()))
+			if (SecondOffhand->IsChildOf(UShieldEquipComponent::StaticClass()))
 			{
-				CurShield->ShieldInfo = FirstOffhand->GetDefaultObject<UShieldEquipComponent>()->ShieldInfo;
+				CurShield->ShieldInfo = SecondOffhand->GetDefaultObject<UShieldEquipComponent>()->ShieldInfo;
 
 				CurShield->SetShield();
+			}
+			else if (SecondOffhand->IsChildOf(URangedEquipComponent::StaticClass()))
+			{
+				CurRanged->RangedInfo = SecondOffhand->GetDefaultObject<URangedEquipComponent>()->RangedInfo;
+
+				CurRanged->SetWeapon();
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CurShield or First Offhand returning null"));
+			UE_LOG(LogTemp, Warning, TEXT("CurShield or Second Offhand returning null"));
 		}
 
 		bFirstOffhandEquiped = true;

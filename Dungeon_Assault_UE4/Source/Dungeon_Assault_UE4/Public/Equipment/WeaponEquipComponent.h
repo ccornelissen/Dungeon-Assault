@@ -40,6 +40,9 @@ struct FWeaponVariables
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float fLeechPercent = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Type")
+	bool bIsTwoHanded = false;
 };
 
 class ADA_Character;
