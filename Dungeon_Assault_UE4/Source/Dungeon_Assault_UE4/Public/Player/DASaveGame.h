@@ -7,7 +7,11 @@
 #include "GameFramework/SaveGame.h"
 #include "DASaveGame.generated.h"
 
-class UWeaponEquipComponent;
+class APaperFlipbookActor;
+class AEquipmentBase;
+class AWeaponBase;
+class AShieldBase;
+class ARangedBase;
 class UArmormEquipComponent;
 class UHelmetEquipComponent;
 class UPaperFlipbookComponent;
@@ -43,10 +47,10 @@ struct FMenuSaveData
 	TArray<TSubclassOf<UPaperFlipbookComponent>> OwnedArmor;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	TArray<TSubclassOf<UPaperFlipbookComponent>> OwnedWeapons;
+	TArray<TSubclassOf<APaperFlipbookActor>> OwnedWeapons;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	TArray<TSubclassOf<UPaperFlipbookComponent>> OwnedOffhands;
+	TArray<TSubclassOf<APaperFlipbookActor>> OwnedOffhands;
 
 	//////OPTIONS/////////
 
@@ -88,10 +92,10 @@ struct FMenuSaveData
 	TArray<TSubclassOf<UPaperFlipbookComponent>> StoreArmor;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	TArray<TSubclassOf<UPaperFlipbookComponent>> StoreWeapons;
+	TArray<TSubclassOf<APaperFlipbookActor>> StoreWeapons;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	TArray<TSubclassOf<UPaperFlipbookComponent>> StoreOffhands;
+	TArray<TSubclassOf<APaperFlipbookActor>> StoreOffhands;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
 	TArray<TSubclassOf<UPaperFlipbookComponent>> StoreHelmets;
@@ -106,13 +110,13 @@ struct FGameplaySaveData
 	int iLastFloorCompleted = 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
-	UPaperFlipbookComponent* SetMainWeapon;
+	APaperFlipbookActor* SetMainWeapon;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
-	UPaperFlipbookComponent* SetMainOffhand;
+	APaperFlipbookActor* SetMainOffhand;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
-	UPaperFlipbookComponent* SetSecondaryWeapon;
+	APaperFlipbookActor* SetSecondaryWeapon;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
-	UPaperFlipbookComponent* SetSecondaryOffhand;
+	APaperFlipbookActor* SetSecondaryOffhand;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")
 	UPaperFlipbookComponent* SetHelmet;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay")

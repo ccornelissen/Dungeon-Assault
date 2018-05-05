@@ -12,6 +12,7 @@ class UImage;
 class UButton;
 class USlider;
 class UPaperFlipbookComponent;
+class APaperFlipbookActor;
 class UDASaveGame;
 
 UCLASS()
@@ -113,8 +114,11 @@ protected:
 	///////////////
 
 	UFUNCTION(BlueprintCallable, Category = "Options")
-	int32 ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> EquipmentArray, int32 i);
-	
+	int32 ChangeArmor(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> EquipmentArray, int32 i);
+
+	UFUNCTION(BlueprintCallable, Category = "Options")
+	int32 ChangeWeapon(UImage* ImageToSet, TArray<TSubclassOf<APaperFlipbookActor>> EquipmentArray, int32 i);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
 	TArray<TSubclassOf<UPaperFlipbookComponent>> HelmetArray;
 
@@ -122,10 +126,10 @@ protected:
 	TArray<TSubclassOf<UPaperFlipbookComponent>> ArmorArray;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	TArray<TSubclassOf<UPaperFlipbookComponent>> WeaponArray;
+	TArray<TSubclassOf<APaperFlipbookActor>> WeaponArray;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	TArray<TSubclassOf<UPaperFlipbookComponent>> OffhandArray;
+	TArray<TSubclassOf<APaperFlipbookActor>> OffhandArray;
 
 	///////////////////////////
 	//Store//
@@ -143,7 +147,7 @@ protected:
 	int iPlayerFunds = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Store")
-	TArray<TSubclassOf<UPaperFlipbookComponent>> StoreWeaponArray;
+	TArray<TSubclassOf<APaperFlipbookActor>> StoreWeaponArray;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Store")
 	int32 iStoreWeapon;
@@ -155,7 +159,7 @@ protected:
 	int32 iStoreArmor;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Store")
-	TArray<TSubclassOf<UPaperFlipbookComponent>> StoreOffhandArray;
+	TArray<TSubclassOf<APaperFlipbookActor>> StoreOffhandArray;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Store")
 	int32 iStoreOffhand;

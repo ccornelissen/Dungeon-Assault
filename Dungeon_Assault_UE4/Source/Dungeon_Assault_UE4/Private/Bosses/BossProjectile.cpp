@@ -6,8 +6,8 @@
 #include "Components/SphereComponent.h"
 #include "EngineUtils.h"
 #include "PaperFlipbookComponent.h"
-#include "WeaponEquipComponent.h"
-#include "ShieldEquipComponent.h"
+#include "WeaponBase.h"
+#include "ShieldBase.h"
 
 ABossProjectile::ABossProjectile()
 {
@@ -73,9 +73,9 @@ void ABossProjectile::SetFireVector(FVector VectorToSet)
 
 void ABossProjectile::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	UShieldEquipComponent* HitComp = Cast<UShieldEquipComponent>(OtherComp);
+	AShieldBase* HitShield = Cast<AShieldBase>(OtherActor);
 
-	UWeaponEquipComponent* WeapComp = Cast<UWeaponEquipComponent>(OtherComp);
+	AWeaponBase* WeapComp = Cast<AWeaponBase>(OtherActor);
 
 	ADA_Character* HitCharacter = Cast<ADA_Character>(OtherActor);
 
@@ -83,7 +83,7 @@ void ABossProjectile::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActo
 
 	if (WeapComp)
 	{
-		bWeaponDeflect = WeapComp->CanDeflect();
+		bWeaponDeflect = WeapComp->CanReflect();
 	}
 
 	if (bWeaponDeflect)
@@ -96,9 +96,13 @@ void ABossProjectile::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActo
 
 		GetWorld()->GetTimerManager().SetTimer(AnimTimerHandle, this, &ABossProjectile::DestroyProjectile, fExplosionAnimationLength, false);
 	}
-	else if (HitComp)
+	else if (HitShield)
 	{
-		fDamage = 0.0f;
+		UE_LOG(LogTemp, Warning, TEXT("Projectile Hitting Shield"));
+
+		float fDamageToReduce = HitShield->EquipmentInfo.fBlockPercent * fDamage;
+
+		fDamage = fDamage - fDamageToReduce;
 
 		Stop();
 

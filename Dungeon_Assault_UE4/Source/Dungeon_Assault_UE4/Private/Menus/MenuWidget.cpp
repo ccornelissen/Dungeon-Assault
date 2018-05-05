@@ -5,8 +5,10 @@
 #include "Image.h"
 #include "Button.h"
 #include "Slider.h"
-#include "WeaponEquipComponent.h"
-#include "ShieldEquipComponent.h"
+#include "WeaponBase.h"
+#include "ShieldBase.h"
+#include "RangedBase.h"
+#include "EquipmentBase.h"
 #include "ArmorEquipComponent.h"
 #include "HelmetEquipComponent.h"
 #include "Dungeon_Assault_UE4.h"
@@ -239,7 +241,7 @@ void UMenuWidget::EquipmentScreenSetup(UImage* MainWep, UImage * MainOff, UImage
 
 			WeaponArray = SaveGameInstance->MenuSaveData.OwnedWeapons;
 
-			ChangeEquipment(MainWep, WeaponArray, iMainWeapon);
+			ChangeWeapon(MainWep, WeaponArray, iMainWeapon);
 		}
 
 	}
@@ -252,7 +254,7 @@ void UMenuWidget::EquipmentScreenSetup(UImage* MainWep, UImage * MainOff, UImage
 
 			OffhandArray = SaveGameInstance->MenuSaveData.OwnedOffhands;
 
-			ChangeEquipment(MainOff, OffhandArray, iMainOffhand);
+			ChangeWeapon(MainOff, OffhandArray, iMainOffhand);
 		}
 	}
 
@@ -264,7 +266,7 @@ void UMenuWidget::EquipmentScreenSetup(UImage* MainWep, UImage * MainOff, UImage
 
 			HelmetArray = SaveGameInstance->MenuSaveData.OwnedHelmets;
 
-			ChangeEquipment(HelmImg, HelmetArray, iHelmets);
+			ChangeArmor(HelmImg, HelmetArray, iHelmets);
 		}
 	}
 
@@ -276,7 +278,7 @@ void UMenuWidget::EquipmentScreenSetup(UImage* MainWep, UImage * MainOff, UImage
 
 			ArmorArray = SaveGameInstance->MenuSaveData.OwnedArmor;
 
-			ChangeEquipment(ArmorImg, ArmorArray, iArmor);
+			ChangeArmor(ArmorImg, ArmorArray, iArmor);
 		}
 	}
 
@@ -286,7 +288,7 @@ void UMenuWidget::EquipmentScreenSetup(UImage* MainWep, UImage * MainOff, UImage
 		{
 			iSecondWeapon = SaveGameInstance->MenuSaveData.iSavedSecondaryWeapon;
 
-			ChangeEquipment(SecondWep, WeaponArray, iSecondWeapon);
+			ChangeWeapon(SecondWep, WeaponArray, iSecondWeapon);
 		}
 	}
 
@@ -296,31 +298,31 @@ void UMenuWidget::EquipmentScreenSetup(UImage* MainWep, UImage * MainOff, UImage
 		{
 			iSecondOffhand = SaveGameInstance->MenuSaveData.iSavedSecondaryOffhand;
 
-			ChangeEquipment(SecondOff, OffhandArray, iSecondOffhand);
+			ChangeWeapon(SecondOff, OffhandArray, iSecondOffhand);
 		}
 	}
 
 }
 
 
-int32 UMenuWidget::ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> EquipmentArray, int32 i)
+int32 UMenuWidget::ChangeArmor(UImage* ImageToSet, TArray<TSubclassOf<UPaperFlipbookComponent>> ArmorArray, int32 i)
 {
-	if (EquipmentArray.Num() > 0)
+	if (ArmorArray.Num() > 0)
 	{
-		if (i > EquipmentArray.Num() - 1)
+		if (i > ArmorArray.Num() - 1)
 		{
 			i = 0;
 		}
 		else if (i < 0)
 		{
-			i = EquipmentArray.Num() - 1;
+			i = ArmorArray.Num() - 1;
 		}
 
-		if (EquipmentArray.IsValidIndex(i))
+		if (ArmorArray.IsValidIndex(i))
 		{
-			if (EquipmentArray[i]->IsChildOf(UWeaponEquipComponent::StaticClass()))
+			if (ArmorArray[i]->IsChildOf(UHelmetEquipComponent::StaticClass()))
 			{
-				UTexture2D* TextureToSet = EquipmentArray[i]->GetDefaultObject<UWeaponEquipComponent>()->MyUITexture;
+				UTexture2D* TextureToSet = ArmorArray[i]->GetDefaultObject<UHelmetEquipComponent>()->MyUITexture;
 
 				if (TextureToSet)
 				{
@@ -328,29 +330,39 @@ int32 UMenuWidget::ChangeEquipment(UImage* ImageToSet, TArray<TSubclassOf<UPaper
 				}
 			}
 
-			if (EquipmentArray[i]->IsChildOf(UShieldEquipComponent::StaticClass()))
+			if (ArmorArray[i]->IsChildOf(UArmorEquipComponent::StaticClass()))
 			{
-				UTexture2D* TextureToSet = EquipmentArray[i]->GetDefaultObject<UShieldEquipComponent>()->MyUITexture;
+				UTexture2D* TextureToSet = ArmorArray[i]->GetDefaultObject<UArmorEquipComponent>()->MyUITexture;
 
 				if (TextureToSet)
 				{
 					ImageToSet->SetBrushFromTexture(TextureToSet);
 				}
 			}
+		}
+	}
 
-			if (EquipmentArray[i]->IsChildOf(UHelmetEquipComponent::StaticClass()))
+	return i;
+}
+
+int32 UMenuWidget::ChangeWeapon(UImage * ImageToSet, TArray<TSubclassOf<APaperFlipbookActor>> WeaponArray, int32 i)
+{
+	if (WeaponArray.Num() > 0)
+	{
+		if (i > WeaponArray.Num() - 1)
+		{
+			i = 0;
+		}
+		else if (i < 0)
+		{
+			i = WeaponArray.Num() - 1;
+		}
+
+		if (WeaponArray.IsValidIndex(i))
+		{
+			if (WeaponArray[i]->IsChildOf(AEquipmentBase::StaticClass()))
 			{
-				UTexture2D* TextureToSet = EquipmentArray[i]->GetDefaultObject<UHelmetEquipComponent>()->MyUITexture;
-
-				if (TextureToSet)
-				{
-					ImageToSet->SetBrushFromTexture(TextureToSet);
-				}
-			}
-
-			if (EquipmentArray[i]->IsChildOf(UArmorEquipComponent::StaticClass()))
-			{
-				UTexture2D* TextureToSet = EquipmentArray[i]->GetDefaultObject<UArmorEquipComponent>()->MyUITexture;
+				UTexture2D* TextureToSet = WeaponArray[i]->GetDefaultObject<AEquipmentBase>()->EquipmentInfo.MyUITexture;
 
 				if (TextureToSet)
 				{
@@ -377,7 +389,7 @@ void UMenuWidget::StoreSetup(UImage * StoreWeapon, UImage * StoreArmor, UImage *
 
 			StoreWeaponArray = SaveGameInstance->MenuSaveData.StoreWeapons;
 
-			ChangeEquipment(StoreWeapon, StoreWeaponArray, iStoreWeapon);
+			ChangeWeapon(StoreWeapon, StoreWeaponArray, iStoreWeapon);
 		}
 
 	}
@@ -390,7 +402,7 @@ void UMenuWidget::StoreSetup(UImage * StoreWeapon, UImage * StoreArmor, UImage *
 
 			StoreOffhandArray = SaveGameInstance->MenuSaveData.StoreOffhands;
 
-			ChangeEquipment(StoreArmor, StoreOffhandArray, iStoreArmor);
+			ChangeArmor(StoreArmor, StoreArmorArray, iStoreArmor);
 		}
 	}
 
@@ -402,7 +414,7 @@ void UMenuWidget::StoreSetup(UImage * StoreWeapon, UImage * StoreArmor, UImage *
 
 			StoreOffhandArray = SaveGameInstance->MenuSaveData.StoreOffhands;
 
-			ChangeEquipment(StoreOffhand, StoreOffhandArray, iStoreOffhand);
+			ChangeWeapon(StoreOffhand, StoreOffhandArray, iStoreOffhand);
 		}
 	}
 
@@ -414,7 +426,7 @@ void UMenuWidget::StoreSetup(UImage * StoreWeapon, UImage * StoreArmor, UImage *
 
 			StoreHelmetArray = SaveGameInstance->MenuSaveData.StoreHelmets;
 
-			ChangeEquipment(StoreHelmet, StoreHelmetArray, iStoreHelmet);
+			ChangeArmor(StoreHelmet, StoreHelmetArray, iStoreHelmet);
 		}
 	}
 

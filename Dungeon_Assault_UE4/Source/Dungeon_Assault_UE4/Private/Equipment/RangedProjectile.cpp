@@ -5,7 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "EngineUtils.h"
 #include "PaperFlipbookComponent.h"
-#include "RangedEquipComponent.h"
+#include "RangedBase.h"
 #include "BossBase.h"
 #include "BossLauncher.h"
 #include "DA_Character.h"

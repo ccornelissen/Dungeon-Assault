@@ -9,17 +9,16 @@
 class UCameraComponent;
 class USpringArmComponent;
 class UPaperFlipbookComponent;
-class UWeaponEquipComponent;
-class UShieldEquipComponent;
-class URangedEquipComponent;
 class UDAPlayerUI;
 class UPaperFlipbook;
 class UDASaveGame;
+class AEquipmentBase;
 
 UCLASS()
 class DUNGEON_ASSAULT_UE4_API ADA_Character : public ACharacter
 {
 	GENERATED_BODY()
+
 
 public:
 	// Sets default values for this character's properties
@@ -47,17 +46,17 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	//Player weapons
-	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
-	TSubclassOf<UPaperFlipbookComponent> FirstWeapon = nullptr;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
+	TSubclassOf<AEquipmentBase> FirstWeapon = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
-	TSubclassOf<UPaperFlipbookComponent> FirstOffhand = nullptr;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
+	TSubclassOf<AEquipmentBase> FirstOffhand = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
-	TSubclassOf<UPaperFlipbookComponent> SecondWeapon = nullptr;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
+	TSubclassOf<AEquipmentBase> SecondWeapon = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
-	TSubclassOf<UPaperFlipbookComponent> SecondOffhand = nullptr;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
+	TSubclassOf<AEquipmentBase> SecondOffhand = nullptr;
 
 protected:
 	// Called when the game starts or when spawned
@@ -81,33 +80,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player Variables")
 	float fArmorSlowDown = 0.95f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Shield")
-	USceneComponent* ShieldIdlePoint = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Shield")
-	USceneComponent* ShieldBlockPoint = nullptr;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	float fPlayerHealth = 100.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	UWeaponEquipComponent* CurWeapon = nullptr;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	UShieldEquipComponent* CurShield = nullptr;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipment")
-	URangedEquipComponent* CurRanged = nullptr;
 
 	//PLAYER BODY COMPONENTS
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	TArray<UPaperFlipbook*> HeadBooks;
 
-	UPROPERTY(BlueprintReadWrite)
-	UPaperFlipbookComponent* HeadComp = nullptr;
-
 	void UpdateBodyComponents();
 
 	void CalculateMovementSpeed();
-	
 
 private:
 	/** Top down camera */
@@ -117,6 +99,28 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraArm;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* CurWeaponPos = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* CurOffhandPos = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* ShieldIdlePoint = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* ShieldBlockPoint = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	UPaperFlipbookComponent* BodyComp = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player", meta = (AllowPrivateAccess = "true"))
+	UPaperFlipbookComponent* HeadComp = nullptr;
+
+	AEquipmentBase* EquippedWeapon = nullptr;
+
+	AEquipmentBase* EquippedOffhand = nullptr;
 
 	UDASaveGame* SaveGameInstance;
 

@@ -4,7 +4,7 @@
 #include "DA_Character.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperFlipbook.h"
-#include "ShieldEquipComponent.h"
+#include "ShieldBase.h"
 #include "DACoin.h"
 #include "Dungeon_Assault_UE4.h"
 
@@ -27,11 +27,11 @@ void ABossMelee::BeginPlay()
 
 void ABossMelee::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	UShieldEquipComponent* HitComp = Cast<UShieldEquipComponent>(OtherComp);
+	AShieldBase* HitActor = Cast<AShieldBase>(OtherActor);
 
 	ADA_Character* HitCharacter = Cast<ADA_Character>(OtherActor);
 
-	if (HitComp)
+	if (HitActor)
 	{
 		fDamage = 0.0f;
 	}

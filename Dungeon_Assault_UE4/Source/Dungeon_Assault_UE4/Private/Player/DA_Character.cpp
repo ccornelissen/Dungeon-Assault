@@ -7,12 +7,13 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "WeaponEquipComponent.h"
-#include "ShieldEquipComponent.h"
-#include "RangedEquipComponent.h"
+#include "WeaponBase.h"
+#include "ShieldBase.h"
+#include "RangedBase.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperFlipbook.h"
 #include "Dungeon_Assault_UE4.h"
+#include "EquipmentBase.h"
 #include "DAPlayerUI.h"
 
 // Sets default values
@@ -47,23 +48,36 @@ ADA_Character::ADA_Character()
 	TopDownCamera->SetupAttachment(CameraArm, USpringArmComponent::SocketName);
 	TopDownCamera->bUsePawnControlRotation = false;
 
+	//Create the player body.
+	BodyComp = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("PlayerBody"));
+	BodyComp->SetupAttachment(RootComponent);
+
+	//Create the player head.
+	HeadComp = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("PlayerHead"));
+	HeadComp->SetupAttachment(RootComponent);
+
 	//Create weapon slot
-	CurWeapon = CreateDefaultSubobject<UWeaponEquipComponent>(TEXT("MainHandWeapon"));
-	CurWeapon->SetupAttachment(RootComponent);
-	CurWeapon->bGenerateOverlapEvents = false;
+	CurWeaponPos = CreateDefaultSubobject<USceneComponent>(FName(TEXT("CurrentWeapon")));
+	CurWeaponPos->SetupAttachment(RootComponent);
+	CurWeaponPos->SetRelativeLocation(FVector(30.0, 30.0, -70.0));
+	CurWeaponPos->SetRelativeRotation(FRotator(-90, 0, 90));
 
-	CurShield = CreateDefaultSubobject<UShieldEquipComponent>(TEXT("ShieldSlot"));
-	CurShield->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	CurShield->bGenerateOverlapEvents = false;
+	//Create Offhand 
+	CurOffhandPos = CreateDefaultSubobject<USceneComponent>(FName(TEXT("CurrentOffhand")));
+	CurOffhandPos->SetupAttachment(RootComponent);
+	CurOffhandPos->SetRelativeLocation(FVector(-10.0, -40.0, -70.0));
+	CurOffhandPos->SetRelativeRotation(FRotator(-90, 0, 90));
 
-	CurRanged = CreateDefaultSubobject<URangedEquipComponent>(TEXT("RangedSlot"));
-	CurRanged->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-
+	//Create Shield points
 	ShieldIdlePoint = CreateDefaultSubobject<USceneComponent>(TEXT("ShieldIdlePoint"));
 	ShieldIdlePoint->SetupAttachment(RootComponent);
+	ShieldIdlePoint->SetRelativeLocation(FVector(-10.0, -40.0, -70.0));
+	ShieldIdlePoint->SetRelativeRotation(FRotator(-90, 0, 90));
 
 	ShieldBlockPoint = CreateDefaultSubobject<USceneComponent>(TEXT("ShieldBlockPoint"));
 	ShieldBlockPoint->SetupAttachment(RootComponent);
+	ShieldBlockPoint->SetRelativeLocation(FVector(67.0, -21.0, -70.0));
+	ShieldBlockPoint->SetRelativeRotation(FRotator(-90, 0, 160));
 }
 
 // Called when the game starts or when spawned
@@ -77,54 +91,58 @@ void ADA_Character::BeginPlay()
 	}
 	
 	fCurrentHealth = fPlayerHealth;
-
-	if (CurWeapon)
-	{
-		CurWeapon->SetPlayer(*this);
-	}
 	
-	if (CurWeapon && FirstWeapon)
+	if (CurWeaponPos && FirstWeapon)
 	{
-		if (FirstWeapon->IsChildOf(UWeaponEquipComponent::StaticClass()))
+		if (FirstWeapon->IsChildOf(AEquipmentBase::StaticClass()))
 		{
-			CurWeapon->WeaponInfo = FirstWeapon->GetDefaultObject<UWeaponEquipComponent>()->WeaponInfo;
+			EquippedWeapon = GetWorld()->SpawnActor<AEquipmentBase>(FirstWeapon, CurWeaponPos->GetComponentLocation(), CurWeaponPos->GetComponentRotation());
 
-			CurWeapon->SetWeapon();
+			EquippedWeapon->AttachToComponent(CurWeaponPos, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+			EquippedWeapon->SetPlayer(*this);
+
+			EquippedWeapon->SetWeapon();
+		}
+	}
+	else if (CurWeaponPos == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Weapon Position!"));
+	}
+	else if (FirstWeapon == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Character missing a starting weapon!"));
+	}
+
+	if (CurOffhandPos && FirstOffhand)
+	{
+		if (FirstOffhand->IsChildOf(AEquipmentBase::StaticClass()))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Setting Offhand!"));
+
+			EquippedOffhand = GetWorld()->SpawnActor<AEquipmentBase>(FirstOffhand, CurOffhandPos->GetComponentLocation(), CurOffhandPos->GetComponentRotation());
+
+			EquippedOffhand->AttachToComponent(CurOffhandPos, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+			EquippedOffhand->SetPlayer(*this);
+
+			EquippedOffhand->SetWeapon();
+
+			if (EquippedOffhand->MyEquipType == EEquipmentType::ET_Shield)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Setting Shield!"));
+				 
+				AShieldBase* OffShield = Cast<AShieldBase>(EquippedOffhand);
+				OffShield->SetIdlePoint(*ShieldIdlePoint);
+				OffShield->SetBlockingPoint(*ShieldBlockPoint);
+
+				OffShield->UnBlock();
+			}
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CurWeapon or First Weapon returning null"));
-	}
-
-	if (CurShield && FirstOffhand)
-	{
-		if (FirstOffhand->IsChildOf(UShieldEquipComponent::StaticClass()))
-		{
-			CurShield->ShieldInfo = FirstOffhand->GetDefaultObject<UShieldEquipComponent>()->ShieldInfo;
-
-			CurShield->SetShield();
-
-			if (ShieldIdlePoint && ShieldBlockPoint)
-			{
-				CurShield->SetIdlePoint(*ShieldIdlePoint);
-				CurShield->SetBlockingPoint(*ShieldBlockPoint);
-			}
-
-			CurShield->UnBlock();
-		}
-	}
-
-	if (CurRanged && FirstOffhand)
-	{
-		if (FirstOffhand->IsChildOf(URangedEquipComponent::StaticClass()))
-		{
-			CurRanged->RangedInfo = FirstOffhand->GetDefaultObject<URangedEquipComponent>()->RangedInfo;
-
-			CurRanged->SetWeapon();
-
-			CurRanged->SetPlayer(*this);
-		}
+		UE_LOG(LogTemp, Warning, TEXT("CurOffhand or FirstOffhand returning null"));
 	}
 
 	CalculateMovementSpeed();
@@ -225,51 +243,93 @@ void ADA_Character::MoveVertical(float Value)
 
 void ADA_Character::UseWeapon()
 {
-	if (CurWeapon)
+	if (EquippedWeapon)
 	{
-		CurWeapon->Attack();
+		if (EquippedWeapon->MyEquipType == EEquipmentType::ET_Melee)
+		{
+			AWeaponBase* MyWeapon = Cast<AWeaponBase>(EquippedWeapon);
+
+			if (MyWeapon)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Melee Attack"));
+
+				MyWeapon->Attack();
+			}
+		}
+		else if (EquippedWeapon->MyEquipType == EEquipmentType::ET_Ranged)
+		{
+			ARangedBase* MyRanged = Cast<ARangedBase>(EquippedWeapon);
+
+			if (MyRanged)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Ranged Attack"));
+				MyRanged->Attack();
+			}
+		}
 	}
 }
 
 void ADA_Character::OffhandUsed()
 {
-	if (CurShield)
+	if (EquippedOffhand)
 	{
-		if (CurShield->ShieldInfo.IdleBook != nullptr)
+		if (EquippedOffhand->MyEquipType == EEquipmentType::ET_Shield)
 		{
-			CurShield->Block();
+			AShieldBase* MyShield = Cast<AShieldBase>(EquippedOffhand);
+
+			if (MyShield)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Blocking"));
+
+				MyShield->Block();
+			}
 		}
-	}
-	
-	if (CurRanged)
-	{
-		CurRanged->Attack();
+		else if (EquippedOffhand->MyEquipType == EEquipmentType::ET_Ranged)
+		{
+			ARangedBase* MyRanged = Cast<ARangedBase>(EquippedOffhand);
+
+			if (MyRanged)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Ranged Attack"));
+				MyRanged->Attack();
+			}
+		}
 	}
 }
 
 void ADA_Character::OffhandReleased()
 {
-	if (CurShield)
+	if (EquippedOffhand)
 	{
-		if (CurShield->ShieldInfo.IdleBook != nullptr)
+		if (EquippedOffhand->MyEquipType == EEquipmentType::ET_Shield)
 		{
-			CurShield->UnBlock();
+			AShieldBase* MyShield = Cast<AShieldBase>(EquippedOffhand);
+
+			if (MyShield)
+			{
+				MyShield->UnBlock();
+			}
 		}
 	}
-	
 }
 
 void ADA_Character::SwitchWeapon()
 {
 	if (bFirstWeaponEquiped)
 	{
-		if (CurWeapon && SecondWeapon)
+		if (EquippedWeapon && SecondWeapon)
 		{
-			if (SecondWeapon->IsChildOf(UWeaponEquipComponent::StaticClass()))
+			if (SecondWeapon->IsChildOf(AEquipmentBase::StaticClass()))
 			{
-				CurWeapon->WeaponInfo = SecondWeapon->GetDefaultObject<UWeaponEquipComponent>()->WeaponInfo;
+				EquippedWeapon->Destroy();
 
-				CurWeapon->SetWeapon();
+				EquippedWeapon = GetWorld()->SpawnActor<AEquipmentBase>(SecondWeapon, CurWeaponPos->GetComponentLocation(), CurWeaponPos->GetComponentRotation());
+
+				EquippedWeapon->AttachToComponent(CurWeaponPos, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+				EquippedWeapon->SetPlayer(*this);
+
+				EquippedWeapon->SetWeapon();
 			}
 		}
 		else
@@ -281,13 +341,19 @@ void ADA_Character::SwitchWeapon()
 	}
 	else
 	{
-		if (CurWeapon && FirstWeapon)
+		if (EquippedWeapon && FirstWeapon)
 		{
-			if (FirstWeapon->IsChildOf(UWeaponEquipComponent::StaticClass()))
+			if (FirstWeapon->IsChildOf(AEquipmentBase::StaticClass()))
 			{
-				CurWeapon->WeaponInfo = FirstWeapon->GetDefaultObject<UWeaponEquipComponent>()->WeaponInfo;
+				EquippedWeapon->Destroy();
 
-				CurWeapon->SetWeapon();
+				EquippedWeapon = GetWorld()->SpawnActor<AEquipmentBase>(FirstWeapon, CurWeaponPos->GetComponentLocation(), CurWeaponPos->GetComponentRotation());
+
+				EquippedWeapon->AttachToComponent(CurWeaponPos, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+				EquippedWeapon->SetPlayer(*this);
+
+				EquippedWeapon->SetWeapon();
 			}
 		}
 		else
@@ -300,25 +366,30 @@ void ADA_Character::SwitchWeapon()
 
 	if (bFirstOffhandEquiped)
 	{
-		if ((CurShield || CurShield) && SecondOffhand)
+		if (EquippedOffhand && SecondOffhand)
 		{
-			if (SecondOffhand->IsChildOf(UShieldEquipComponent::StaticClass()))
+			if (SecondOffhand->IsChildOf(AEquipmentBase::StaticClass()))
 			{
-				CurShield->ShieldInfo = SecondOffhand->GetDefaultObject<UShieldEquipComponent>()->ShieldInfo;
+				EquippedOffhand->Destroy();
 
-				CurRanged = nullptr;
+				EquippedOffhand = GetWorld()->SpawnActor<AEquipmentBase>(SecondOffhand, CurWeaponPos->GetComponentLocation(), CurWeaponPos->GetComponentRotation());
 
-				CurShield->SetShield();
-			}
-			else if (SecondOffhand->IsChildOf(URangedEquipComponent::StaticClass()))
-			{
-				CurRanged->RangedInfo = SecondOffhand->GetDefaultObject<URangedEquipComponent>()->RangedInfo;
+				EquippedOffhand->AttachToComponent(CurOffhandPos, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-				CurShield = nullptr;
+				EquippedOffhand->SetPlayer(*this);
 
-				CurRanged->SetWeapon();
+				EquippedOffhand->SetWeapon();
 
-				CurRanged->SetPlayer(*this);
+				if (EquippedOffhand->MyEquipType == EEquipmentType::ET_Shield)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Setting Shield!"));
+
+					AShieldBase* OffShield = Cast<AShieldBase>(EquippedOffhand);
+					OffShield->SetIdlePoint(*ShieldIdlePoint);
+					OffShield->SetBlockingPoint(*ShieldBlockPoint);
+
+					OffShield->UnBlock();
+				}
 			}
 		}
 		else
@@ -331,19 +402,30 @@ void ADA_Character::SwitchWeapon()
 	else
 	{
 
-		if ((CurShield || CurShield) && FirstOffhand)
+		if (EquippedOffhand && FirstOffhand)
 		{
-			if (SecondOffhand->IsChildOf(UShieldEquipComponent::StaticClass()))
+			if (FirstOffhand->IsChildOf(AEquipmentBase::StaticClass()))
 			{
-				CurShield->ShieldInfo = SecondOffhand->GetDefaultObject<UShieldEquipComponent>()->ShieldInfo;
+				EquippedOffhand->Destroy();
 
-				CurShield->SetShield();
-			}
-			else if (SecondOffhand->IsChildOf(URangedEquipComponent::StaticClass()))
-			{
-				CurRanged->RangedInfo = SecondOffhand->GetDefaultObject<URangedEquipComponent>()->RangedInfo;
+				EquippedOffhand = GetWorld()->SpawnActor<AEquipmentBase>(FirstOffhand, CurWeaponPos->GetComponentLocation(), CurWeaponPos->GetComponentRotation());
 
-				CurRanged->SetWeapon();
+				EquippedOffhand->AttachToComponent(CurOffhandPos, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+				EquippedOffhand->SetPlayer(*this);
+
+				EquippedOffhand->SetWeapon();
+
+				if (EquippedOffhand->MyEquipType == EEquipmentType::ET_Shield)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Setting Shield!"));
+
+					AShieldBase* OffShield = Cast<AShieldBase>(EquippedOffhand);
+					OffShield->SetIdlePoint(*ShieldIdlePoint);
+					OffShield->SetBlockingPoint(*ShieldBlockPoint);
+
+					OffShield->UnBlock();
+				}
 			}
 		}
 		else
@@ -353,7 +435,6 @@ void ADA_Character::SwitchWeapon()
 
 		bFirstOffhandEquiped = true;
 	}
-
 }
 
 void ADA_Character::TurnToFace()
@@ -384,22 +465,23 @@ void ADA_Character::TurnToFace()
 void ADA_Character::UpdateBodyComponents()
 {
 	FRotator CurPlayerRot = GetActorRotation();
-
-	if (CurPlayerRot.Yaw < -91.0f || CurPlayerRot.Yaw > 89.0f)
+	if (HeadBooks.Num() != 0)
 	{
-		if (HeadComp && HeadBooks[0])
+		if (CurPlayerRot.Yaw < -91.0f || CurPlayerRot.Yaw > 89.0f)
 		{
-			HeadComp->SetFlipbook(HeadBooks[0]);
+			if (HeadComp && HeadBooks[0])
+			{
+				HeadComp->SetFlipbook(HeadBooks[0]);
+			}
+		}
+		else if (CurPlayerRot.Yaw > -89.0f || CurPlayerRot.Yaw < 91.0f)
+		{
+			if (HeadComp && HeadBooks[1])
+			{
+				HeadComp->SetFlipbook(HeadBooks[1]);
+			}
 		}
 	}
-	else if (CurPlayerRot.Yaw > -89.0f || CurPlayerRot.Yaw < 91.0f)
-	{
-		if (HeadComp && HeadBooks[1])
-		{
-			HeadComp->SetFlipbook(HeadBooks[1]);
-		}
-	}
-
 }
 
 void ADA_Character::CalculateMovementSpeed()
